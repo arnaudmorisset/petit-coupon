@@ -28,7 +28,8 @@
 		/* Maximum type safety */
 		"noUncheckedIndexedAccess": true,
 		"exactOptionalPropertyTypes": true,
-		"noPropertyAccessFromIndexSignature": true
+		"noPropertyAccessFromIndexSignature": true,
+		"noImplicitReturns": true
 	},
 	"include": ["src/**/*.ts", "src/**/*.js", "src/**/*.svelte"]
 }

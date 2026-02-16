@@ -9,7 +9,7 @@ npm run dev         # Start Vite dev server with HMR
 npm run build       # Production build (output: dist/)
 npm run preview     # Preview production build locally
 npm run check       # Type-check Svelte + TypeScript (svelte-check + tsc)
-npm run test        # Run tests once with Vitest
+npm run test        # Run all tests once with Vitest
 npm run test:watch  # Run tests in watch mode
 npm run lint        # Lint with Biome (check mode, no writes)
 npm run lint:fix    # Lint with Biome and apply safe fixes
@@ -18,26 +18,45 @@ npm run format      # Format with Biome (writes changes)
 
 ## Tech Stack
 
-- **Svelte 5** with reactive runes (`$state`, etc.) — not the older reactive assignment syntax
-- **TypeScript** (strictest config: `strict`, `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`, etc.)
+- **Svelte 5** with reactive runes (`$state`, `$props`, etc.) — not the older reactive assignment syntax
+- **TypeScript** (strictest config: `strict`, `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`, `noImplicitReturns`, etc.)
 - **Vite 7** for bundling and dev server
 - **Vitest** for testing (jsdom environment, `@testing-library/svelte`)
 - **Biome** for linting and formatting (`.ts`, `.js`, `.json` files only — not `.svelte`)
+- **jsPDF** for vector PDF generation (no html2canvas)
 - **Node.js 24.13** (see `.nvmrc`)
 
 ## Architecture
 
-This is a vanilla Svelte 5 SPA (no SvelteKit). Entry point is `index.html` → `src/main.ts` → `src/App.svelte`.
+Vanilla Svelte 5 SPA (no SvelteKit). Entry: `index.html` → `src/main.ts` → `src/App.svelte`.
 
-- `src/lib/` — Reusable components
-- `src/assets/` — Static assets (images, SVGs)
-- `src/app.css` — Global styles with CSS custom properties and light/dark scheme support
+### Domain Layer (`src/lib/domain/`)
+Pure TypeScript classes — zero framework dependency. Each concept is its own file:
+- Value objects: `CouponId`, `Coupon`, `PageFormat`, `Margins`, `CouponDimensions`, `GridPosition`, `LayoutConfig`
+- `LayoutEngine` — pure math for computing coupon grid positions across pages
+- `CouponCollection` — manages the coupon list, uses `IdGenerator` (DI) for ID generation
+- `Theme` interface + `DEFAULT_THEME` constant
 
-Components use Svelte 5 single-file format: `<script lang="ts">`, markup, and `<style>` (scoped by default).
+### PDF Layer (`src/lib/pdf/`)
+- `CouponRenderer` interface → `JsPdfCouponRenderer` implementation
+- `DownloadService` — triggers browser file download from a Blob
+
+### Store Layer (`src/lib/stores/`)
+- `CouponStore` — Svelte 5 reactive class wrapping `CouponCollection`, uses `$state`
+
+### UI Layer (`src/lib/components/`)
+Thin Svelte 5 components: `CouponForm`, `CouponList`, `DownloadButton`. All receive `CouponStore` via props. No business logic in components.
+
+## Development Guidelines
+
+- **Strict TDD**: Red → Green → Refactor. Write failing test first.
+- **OOP**: Domain logic in proper classes with DI. No business logic in Svelte components.
+- **Value objects are immutable** (`readonly` properties).
+- **No `any`** — Biome enforces `noExplicitAny`.
 
 ## Testing
 
-Tests are colocated with source files using `*.test.ts`. Use `@testing-library/svelte` for component tests. The test environment is jsdom.
+Tests are colocated with source files using `*.test.ts`. Use `@testing-library/svelte` for component tests. The test environment is jsdom. Domain classes get thorough unit tests; PDF gets smoke tests.
 
 ## Linting & Formatting
 
