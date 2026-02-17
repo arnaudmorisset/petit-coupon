@@ -35,17 +35,26 @@ Pure TypeScript classes — zero framework dependency. Each concept is its own f
 - Value objects: `CouponId`, `Coupon`, `PageFormat`, `Margins`, `CouponDimensions`, `GridPosition`, `LayoutConfig`
 - `LayoutEngine` — pure math for computing coupon grid positions across pages
 - `CouponCollection` — manages the coupon list, uses `IdGenerator` (DI) for ID generation
-- `Theme` interface + `DEFAULT_THEME` constant
+- `Theme` interface + `DEFAULT_THEME` constant — extended with `ThemeCategory`, `BorderStyle`, title font, accent color, padding, and border style
+- `ThemeRegistry` — holds all themes, lookups by ID or category, validates uniqueness
+- `themes.ts` — 4 theme definitions (`classic`, `romantic`, `sunshine`, `midnight`) + `ALL_THEMES` array + `THEME_REGISTRY` instance
 
 ### PDF Layer (`src/lib/pdf/`)
 - `CouponRenderer` interface → `JsPdfCouponRenderer` implementation
+- `FontRegistry` — registers custom TTF fonts into jsPDF (`FontSource` interface for base64-encoded TTFs)
+- `fonts/` — embedded TTF font files (Dancing Script, Nunito, Space Grotesk) + `font-data.ts` base64 exports
+- `fonts.ts` — pre-built `APP_FONT_REGISTRY` instance with all custom fonts
 - `DownloadService` — triggers browser file download from a Blob
+- `JsPdfCouponRenderer` supports solid/dashed/double border styles, title + body fonts, padding, accent-colored crop marks
 
 ### Store Layer (`src/lib/stores/`)
 - `CouponStore` — Svelte 5 reactive class wrapping `CouponCollection`, uses `$state`
+- `ThemeStore` — Svelte 5 reactive class wrapping `ThemeRegistry`, exposes `selectedTheme` and `selectTheme(id)`
 
 ### UI Layer (`src/lib/components/`)
-Thin Svelte 5 components: `CouponForm`, `CouponList`, `DownloadButton`. All receive `CouponStore` via props. No business logic in components.
+Thin Svelte 5 components: `CouponForm`, `CouponList`, `DownloadButton`, `ThemePicker`, `ThemePreviewCard`, `CouponPreview`. Components receive stores/data via props. No business logic in components.
+
+- Theme-dependent styling uses CSS custom properties (`style:--var-name`) set on elements, referenced in `<style>` blocks — not inline `style:property` attributes.
 
 ## Development Guidelines
 
@@ -53,6 +62,7 @@ Thin Svelte 5 components: `CouponForm`, `CouponList`, `DownloadButton`. All rece
 - **OOP**: Domain logic in proper classes with DI. No business logic in Svelte components.
 - **Value objects are immutable** (`readonly` properties).
 - **No `any`** — Biome enforces `noExplicitAny`.
+- **No non-null assertions** — Biome enforces `noNonNullAssertion`. Use type assertions (`as Type`) with safety comments when needed (e.g. after validation in constructors).
 
 ## Testing
 
