@@ -7,6 +7,13 @@ import { LayoutEngine } from "../domain/layout-engine";
 import { Margins } from "../domain/margins";
 import { PageFormat } from "../domain/page-format";
 import { DEFAULT_THEME } from "../domain/theme";
+import {
+	MIDNIGHT_THEME,
+	ROMANTIC_THEME,
+	SUNSHINE_THEME,
+} from "../domain/themes";
+import { FontRegistry } from "./font-registry";
+import { APP_FONT_REGISTRY } from "./fonts";
 import { JsPdfCouponRenderer } from "./jspdf-renderer";
 
 function defaultLayout(): LayoutEngine {
@@ -28,6 +35,8 @@ function makeCoupons(count: number): Coupon[] {
 	);
 }
 
+const emptyFontRegistry = new FontRegistry([]);
+
 describe("JsPdfCouponRenderer", () => {
 	it("returns a PDF blob", () => {
 		const renderer = new JsPdfCouponRenderer();
@@ -35,6 +44,7 @@ describe("JsPdfCouponRenderer", () => {
 			makeCoupons(1),
 			defaultLayout(),
 			DEFAULT_THEME,
+			emptyFontRegistry,
 		);
 
 		expect(blob).toBeInstanceOf(Blob);
@@ -43,7 +53,12 @@ describe("JsPdfCouponRenderer", () => {
 
 	it("renders without error for 0 coupons", () => {
 		const renderer = new JsPdfCouponRenderer();
-		const blob = renderer.render([], defaultLayout(), DEFAULT_THEME);
+		const blob = renderer.render(
+			[],
+			defaultLayout(),
+			DEFAULT_THEME,
+			emptyFontRegistry,
+		);
 
 		expect(blob).toBeInstanceOf(Blob);
 	});
@@ -54,6 +69,7 @@ describe("JsPdfCouponRenderer", () => {
 			makeCoupons(8),
 			defaultLayout(),
 			DEFAULT_THEME,
+			emptyFontRegistry,
 		);
 
 		expect(blob).toBeInstanceOf(Blob);
@@ -66,6 +82,59 @@ describe("JsPdfCouponRenderer", () => {
 			makeCoupons(9),
 			defaultLayout(),
 			DEFAULT_THEME,
+			emptyFontRegistry,
+		);
+
+		expect(blob).toBeInstanceOf(Blob);
+		expect(blob.size).toBeGreaterThan(0);
+	});
+
+	it("renders with romantic theme and custom font", () => {
+		const renderer = new JsPdfCouponRenderer();
+		const blob = renderer.render(
+			makeCoupons(2),
+			defaultLayout(),
+			ROMANTIC_THEME,
+			APP_FONT_REGISTRY,
+		);
+
+		expect(blob).toBeInstanceOf(Blob);
+		expect(blob.size).toBeGreaterThan(0);
+	});
+
+	it("renders with sunshine theme and custom font", () => {
+		const renderer = new JsPdfCouponRenderer();
+		const blob = renderer.render(
+			makeCoupons(2),
+			defaultLayout(),
+			SUNSHINE_THEME,
+			APP_FONT_REGISTRY,
+		);
+
+		expect(blob).toBeInstanceOf(Blob);
+		expect(blob.size).toBeGreaterThan(0);
+	});
+
+	it("renders with midnight theme (double border)", () => {
+		const renderer = new JsPdfCouponRenderer();
+		const blob = renderer.render(
+			makeCoupons(2),
+			defaultLayout(),
+			MIDNIGHT_THEME,
+			APP_FONT_REGISTRY,
+		);
+
+		expect(blob).toBeInstanceOf(Blob);
+		expect(blob.size).toBeGreaterThan(0);
+	});
+
+	it("renders with dashed border style", () => {
+		const renderer = new JsPdfCouponRenderer();
+		const blob = renderer.render(
+			makeCoupons(1),
+			defaultLayout(),
+			ROMANTIC_THEME,
+			APP_FONT_REGISTRY,
 		);
 
 		expect(blob).toBeInstanceOf(Blob);

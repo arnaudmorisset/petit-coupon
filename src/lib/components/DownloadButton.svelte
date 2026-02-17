@@ -4,16 +4,18 @@
 	import { LayoutEngine } from "../domain/layout-engine";
 	import { Margins } from "../domain/margins";
 	import { PageFormat } from "../domain/page-format";
-	import { DEFAULT_THEME } from "../domain/theme";
+	import type { Theme } from "../domain/theme";
 	import { DownloadService } from "../pdf/download-service";
+	import { APP_FONT_REGISTRY } from "../pdf/fonts";
 	import { JsPdfCouponRenderer } from "../pdf/jspdf-renderer";
 	import type { CouponStore } from "../stores/coupon-store.svelte";
 
 	interface Props {
 		store: CouponStore;
+		theme: Theme;
 	}
 
-	const { store }: Props = $props();
+	const { store, theme }: Props = $props();
 
 	const renderer = new JsPdfCouponRenderer();
 	const downloadService = new DownloadService();
@@ -27,7 +29,7 @@
 	);
 
 	function handleDownload(): void {
-		const blob = renderer.render(store.coupons, layout, DEFAULT_THEME);
+		const blob = renderer.render(store.coupons, layout, theme, APP_FONT_REGISTRY);
 		downloadService.download(blob, "petit-coupon.pdf");
 	}
 </script>
