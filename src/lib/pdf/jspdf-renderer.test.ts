@@ -140,4 +140,35 @@ describe("JsPdfCouponRenderer", () => {
 		expect(blob).toBeInstanceOf(Blob);
 		expect(blob.size).toBeGreaterThan(0);
 	});
+
+	it("renders coupon with very long text without error", () => {
+		const renderer = new JsPdfCouponRenderer();
+		const longTextCoupon = new Coupon(
+			new CouponId("long-text"),
+			"This is a very long coupon text that should trigger font scaling to fit within the coupon boundaries properly without overflowing",
+		);
+		const blob = renderer.render(
+			[longTextCoupon],
+			defaultLayout(),
+			DEFAULT_THEME,
+			emptyFontRegistry,
+		);
+
+		expect(blob).toBeInstanceOf(Blob);
+		expect(blob.size).toBeGreaterThan(0);
+	});
+
+	it("renders coupon with empty text without error", () => {
+		const renderer = new JsPdfCouponRenderer();
+		const emptyCoupon = new Coupon(new CouponId("empty"), "");
+		const blob = renderer.render(
+			[emptyCoupon],
+			defaultLayout(),
+			DEFAULT_THEME,
+			emptyFontRegistry,
+		);
+
+		expect(blob).toBeInstanceOf(Blob);
+		expect(blob.size).toBeGreaterThan(0);
+	});
 });

@@ -29,4 +29,14 @@ export class CouponStore {
 		this.collection.remove(id);
 		this.coupons = this.collection.getAll();
 	}
+
+	editCoupon(id: CouponId, newText: string): void {
+		this.collection.edit(id, newText);
+		this.coupons = this.collection.getAll();
+	}
+
+	moveCoupon(id: CouponId, direction: "up" | "down"): void {
+		this.collection.move(id, direction);
+		this.coupons = this.collection.getAll();
+	}
 }

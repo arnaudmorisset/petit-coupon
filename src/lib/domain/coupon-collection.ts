@@ -17,11 +17,51 @@ export class CouponCollection {
 	}
 
 	remove(id: CouponId): void {
-		const index = this.coupons.findIndex((c) => c.id.equals(id));
-		if (index === -1) {
-			throw new Error(`Coupon with id "${id.value}" not found`);
-		}
+		const index = this.findIndexOrThrow(id);
 		this.coupons.splice(index, 1);
+	}
+
+	edit(id: CouponId, newText: string): Coupon {
+		if (newText.trim().length === 0) {
+			throw new Error("Coupon text cannot be empty");
+		}
+		const index = this.findIndexOrThrow(id);
+		const updated = new Coupon(id, newText);
+		this.coupons[index] = updated;
+		return updated;
+	}
+
+	move(id: CouponId, direction: "up" | "down"): void {
+		const index = this.findIndexOrThrow(id);
+
+		if (direction === "up" && index === 0) {
+			return;
+		}
+		if (direction === "down" && index === this.coupons.length - 1) {
+			return;
+		}
+
+		const targetIndex = direction === "up" ? index - 1 : index + 1;
+		const current = this.coupons[index] as Coupon;
+		const target = this.coupons[targetIndex] as Coupon;
+		this.coupons[index] = target;
+		this.coupons[targetIndex] = current;
+	}
+
+	reorder(fromIndex: number, toIndex: number): void {
+		if (
+			fromIndex < 0 ||
+			fromIndex >= this.coupons.length ||
+			toIndex < 0 ||
+			toIndex >= this.coupons.length
+		) {
+			throw new Error(
+				`Index out of bounds: fromIndex=${String(fromIndex)}, toIndex=${String(toIndex)}, length=${String(this.coupons.length)}`,
+			);
+		}
+
+		const [coupon] = this.coupons.splice(fromIndex, 1);
+		this.coupons.splice(toIndex, 0, coupon as Coupon);
 	}
 
 	getAll(): Coupon[] {
@@ -34,5 +74,13 @@ export class CouponCollection {
 
 	isEmpty(): boolean {
 		return this.coupons.length === 0;
+	}
+
+	private findIndexOrThrow(id: CouponId): number {
+		const index = this.coupons.findIndex((c) => c.id.equals(id));
+		if (index === -1) {
+			throw new Error(`Coupon with id "${id.value}" not found`);
+		}
+		return index;
 	}
 }

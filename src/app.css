@@ -31,7 +31,7 @@ body {
 }
 
 h1 {
-  font-size: 3.2em;
+  font-size: clamp(1.8em, 5vw, 3.2em);
   line-height: 1.1;
 }
 
@@ -44,6 +44,8 @@ h1 {
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 button {
@@ -75,5 +77,15 @@ button:focus-visible {
   }
   button {
     background-color: #f9f9f9;
+  }
+}
+
+@media (max-width: 640px) {
+  #app {
+    padding: 1rem;
+  }
+
+  h1 {
+    margin-bottom: 0.5em;
   }
 }
