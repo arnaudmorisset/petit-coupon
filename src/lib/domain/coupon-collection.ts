@@ -1,19 +1,11 @@
 import { Coupon } from "./coupon";
-import { CouponId } from "./coupon-id";
-import type { IdGenerator } from "./id-generator";
+import type { CouponId } from "./coupon-id";
 
 export class CouponCollection {
-	private readonly idGenerator: IdGenerator;
 	private readonly coupons: Coupon[] = [];
 
-	constructor(idGenerator: IdGenerator) {
-		this.idGenerator = idGenerator;
-	}
-
-	add(text: string): Coupon {
-		const coupon = new Coupon(new CouponId(this.idGenerator.generate()), text);
+	add(coupon: Coupon): void {
 		this.coupons.push(coupon);
-		return coupon;
 	}
 
 	remove(id: CouponId): void {
@@ -21,12 +13,17 @@ export class CouponCollection {
 		this.coupons.splice(index, 1);
 	}
 
-	edit(id: CouponId, newText: string): Coupon {
-		if (newText.trim().length === 0) {
-			throw new Error("Coupon text cannot be empty");
-		}
+	edit(id: CouponId, updates: Partial<Coupon>): Coupon {
 		const index = this.findIndexOrThrow(id);
-		const updated = new Coupon(id, newText);
+		const existing = this.coupons[index] as Coupon;
+		const newText = updates.text ?? existing.text;
+		const newTitle = updates.title ?? existing.title;
+
+		if (newText.trim().length === 0 && newTitle.trim().length === 0) {
+			throw new Error("Coupon must have at least a title or text");
+		}
+
+		const updated = new Coupon(id, newText, newTitle);
 		this.coupons[index] = updated;
 		return updated;
 	}

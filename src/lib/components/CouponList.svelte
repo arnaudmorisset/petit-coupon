@@ -1,4 +1,5 @@
 <script lang="ts">
+	import type { Coupon } from "../domain/coupon";
 	import type { CouponId } from "../domain/coupon-id";
 	import type { Theme } from "../domain/theme";
 	import type { CouponStore } from "../stores/coupon-store.svelte";
@@ -15,8 +16,8 @@
 		store.remove(id);
 	}
 
-	function handleEdit(id: CouponId, newText: string): void {
-		store.editCoupon(id, newText);
+	function handleEdit(id: CouponId, updates: Partial<Coupon>): void {
+		store.editCoupon(id, updates);
 	}
 
 	function handleMoveUp(id: CouponId): void {

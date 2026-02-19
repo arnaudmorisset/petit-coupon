@@ -40,7 +40,14 @@
 				style:--border-radius="{theme.borderRadiusMm}px"
 				style:--title-color={theme.titleColor}
 			>
-				<span class="coupon-label">{entry.coupon.text}</span>
+				<div class="coupon-content">
+					{#if entry.coupon.title.length > 0}
+						<span class="coupon-title">{entry.coupon.title}</span>
+					{/if}
+					{#if entry.coupon.text.length > 0}
+						<span class="coupon-body">{entry.coupon.text}</span>
+					{/if}
+				</div>
 			</div>
 		{/each}
 	</div>
@@ -91,9 +98,25 @@
 		box-sizing: border-box;
 	}
 
-	.coupon-label {
+	.coupon-content {
+		display: flex;
+		flex-direction: column;
+		gap: 1px;
+		align-items: center;
+		width: 100%;
+	}
+
+	.coupon-title {
 		font-size: clamp(6px, 1.5vw, 11px);
-		font-weight: 600;
+		font-weight: 700;
+		color: var(--title-color);
+		word-break: break-word;
+		line-height: 1.2;
+	}
+
+	.coupon-body {
+		font-size: clamp(5px, 1.2vw, 9px);
+		font-weight: 400;
 		color: var(--title-color);
 		word-break: break-word;
 		line-height: 1.2;

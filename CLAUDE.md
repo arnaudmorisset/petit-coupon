@@ -32,11 +32,12 @@ Vanilla Svelte 5 SPA (no SvelteKit). Entry: `index.html` → `src/main.ts` → `
 
 ### Domain Layer (`src/lib/domain/`)
 Pure TypeScript classes — zero framework dependency. Each concept is its own file:
-- Value objects: `CouponId`, `Coupon`, `PageFormat`, `Margins`, `CouponDimensions`, `GridPosition`, `LayoutConfig`
+- Value objects: `CouponId`, `Coupon` (has `id`, `text`, `title`), `PageFormat`, `Margins`, `CouponDimensions`, `GridPosition`, `LayoutConfig`
 - `LayoutEngine` — pure math for computing coupon grid positions across pages
-- `CouponCollection` — manages the coupon list (add, remove, edit, move, reorder), uses `IdGenerator` (DI) for ID generation
+- `CouponCollection` — manages the coupon list. `add(coupon: Coupon)`, `edit(id, updates: Partial<Coupon>)`, `remove`, `move`, `reorder`. No ID generation — caller provides complete `Coupon` instances
 - `TextMeasurer` interface + `EstimatedTextMeasurer` — measures text width in mm (char-width ratio based)
 - `TextScaler` — computes optimal font size to fit text in a bounding box with word wrapping and force-break
+- `CouponTextLayout` — computes title + body text zones for PDF rendering. Uses `TextScaler` to auto-scale each zone independently. Returns `TextBlockLayout` (lines, fontSize, offsetY) for title (nullable) and body
 - `SheetPreviewData` — groups coupons and grid positions by page number for preview rendering
 - `Theme` interface + `DEFAULT_THEME` constant — extended with `ThemeCategory`, `BorderStyle`, title font, accent color, padding, and border style
 - `ThemeRegistry` — holds all themes, lookups by ID or category, validates uniqueness
@@ -49,22 +50,30 @@ Pure TypeScript classes — zero framework dependency. Each concept is its own f
 - `fonts.ts` — pre-built `APP_FONT_REGISTRY` instance with all custom fonts
 - `DownloadService` — triggers browser file download from a Blob
 - `JsPdfTextMeasurer` — wraps jsPDF's `getStringUnitWidth()` for precise text measurement during PDF rendering
-- `JsPdfCouponRenderer` supports solid/dashed/double border styles, title + body fonts, padding, accent-colored crop marks, and auto-scaled text via `TextScaler`
+- `JsPdfCouponRenderer` supports solid/dashed/double border styles, title + body fonts, padding, accent-colored crop marks, and auto-scaled text via `CouponTextLayout` (which wraps `TextScaler`)
+
+### Persistence Layer (`src/lib/persistence/`)
+- `AppStorage` interface + `SessionData`/`SerializedCoupon` types — storage contract for session persistence
+- `LocalStorageAdapter` — thin `localStorage` wrapper implementing `AppStorage` (JSON stringify/parse, no validation)
+- `InMemoryStorage` — test double implementing `AppStorage`
+- `SessionSerializer` — converts between domain objects (`Coupon`) and `SessionData`. Resilient deserialization: validates theme IDs via `ThemeRegistry`, filters invalid coupons, falls back to defaults on error
 
 ### Store Layer (`src/lib/stores/`)
-- `CouponStore` — Svelte 5 reactive class wrapping `CouponCollection`, uses `$state`. Exposes `add`, `remove`, `editCoupon`, `moveCoupon`
+- `CouponStore` — Svelte 5 reactive class wrapping `CouponCollection`, uses `$state`. Owns `IdGenerator` and exposes `nextId()`. Methods: `add(coupon)`, `remove`, `editCoupon(id, updates: Partial<Coupon>)`, `moveCoupon`, `loadCoupons`
 - `ThemeStore` — Svelte 5 reactive class wrapping `ThemeRegistry`, exposes `selectedTheme` and `selectTheme(id)`
 - `StepperStore` — manages 3-step navigation (Theme → Create → Preview & Download), guards step 3 behind coupon existence
+- `PersistenceManager` — auto-saves session (theme + coupons) to `AppStorage` via `$effect` with 300ms debounce, restores on construction, exposes `clearSession()`
 
 ### UI Layer (`src/lib/components/`)
 Thin Svelte 5 components. Components receive stores/data via props. No business logic in components.
 
 - `AppStepper` — 3-step guided flow with step indicators and Back/Next navigation
-- `CouponForm` — textarea input to add coupons, responsive (stacks vertically on mobile)
+- `CouponForm` — title input + body textarea to add coupons, enabled when at least one field is non-empty, responsive (stacks vertically on mobile)
 - `CouponList` — list of coupons with reorder (up/down) buttons and remove button per coupon
-- `CouponPreview` — single coupon card with inline editing (click to edit, Enter/Escape/blur to save/cancel)
+- `CouponPreview` — single coupon card with two-field inline editing (title input + body textarea, explicit Save/Cancel buttons). Shows title in larger/bolder font above body
 - `SheetPreview` — WYSIWYG multi-page A4 preview using `LayoutEngine` and `SheetPreviewData`
-- `SheetPage` — renders one A4 page with absolutely-positioned coupon cells (percentage-based coordinates)
+- `SheetPage` — renders one A4 page with absolutely-positioned coupon cells (percentage-based coordinates), shows title + body
+- `ClearButton` — "Start fresh" button with browser `confirm()` dialog, calls `PersistenceManager.clearSession()`
 - `DownloadButton`, `ThemePicker`, `ThemePreviewCard` — unchanged from v0.2
 - Theme-dependent styling uses CSS custom properties (`style:--var-name`) set on elements, referenced in `<style>` blocks — not inline `style:property` attributes.
 - Responsive breakpoint at 640px (mobile below, desktop above)
@@ -75,7 +84,9 @@ Thin Svelte 5 components. Components receive stores/data via props. No business 
 - **OOP**: Domain logic in proper classes with DI. No business logic in Svelte components.
 - **Value objects are immutable** (`readonly` properties).
 - **No `any`** — Biome enforces `noExplicitAny`.
-- **No non-null assertions** — Biome enforces `noNonNullAssertion`. Use type assertions (`as Type`) with safety comments when needed (e.g. after validation in constructors).
+- **No non-null assertions** — Biome enforces `noNonNullAssertion`.
+- **No `as` keyword** — avoid TypeScript type assertions. Design code so the type system can infer types naturally.
+- **Don't Check Types** — follow the pattern from [pragmatic-objects.com](https://book.pragmatic-objects.com/practices/dont-check-types). Avoid `typeof`/`instanceof` introspection for validation. Prefer resilient try-catch over type-checking guards. Keep adapters thin (no validation logic) and let domain-level serializers handle data integrity.
 
 ## Testing
 

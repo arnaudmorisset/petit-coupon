@@ -6,12 +6,13 @@
 	interface Props {
 		coupon: Coupon;
 		theme: Theme;
-		onedit?: (id: CouponId, newText: string) => void;
+		onedit?: (id: CouponId, updates: Partial<Coupon>) => void;
 	}
 
 	const { coupon, theme, onedit }: Props = $props();
 
 	let editing = $state(false);
+	let editTitle = $state("");
 	let editText = $state("");
 
 	function borderStyleCss(style: string): string {
@@ -23,13 +24,19 @@
 	function startEdit(): void {
 		if (!onedit) return;
 		editing = true;
+		editTitle = coupon.title;
 		editText = coupon.text;
 	}
 
 	function saveEdit(): void {
-		const trimmed = editText.trim();
-		if (trimmed.length > 0 && trimmed !== coupon.text && onedit) {
-			onedit(coupon.id, trimmed);
+		const trimmedTitle = editTitle.trim();
+		const trimmedText = editText.trim();
+		if (
+			(trimmedTitle.length > 0 || trimmedText.length > 0) &&
+			(trimmedTitle !== coupon.title || trimmedText !== coupon.text) &&
+			onedit
+		) {
+			onedit(coupon.id, { title: trimmedTitle, text: trimmedText });
 		}
 		editing = false;
 	}
@@ -39,10 +46,7 @@
 	}
 
 	function handleKeydown(event: KeyboardEvent): void {
-		if (event.key === "Enter") {
-			event.preventDefault();
-			saveEdit();
-		} else if (event.key === "Escape") {
+		if (event.key === "Escape") {
 			cancelEdit();
 		}
 	}
@@ -60,12 +64,24 @@
 	style:--text-color={theme.textColor}
 >
 	{#if editing}
-		<textarea
-			class="coupon-edit"
-			bind:value={editText}
-			onblur={saveEdit}
-			onkeydown={handleKeydown}
-		></textarea>
+		<div class="coupon-edit-fields">
+			<input
+				class="coupon-edit-title"
+				bind:value={editTitle}
+				placeholder="Title (optional)"
+				onkeydown={handleKeydown}
+			/>
+			<textarea
+				class="coupon-edit-text"
+				bind:value={editText}
+				placeholder="Coupon text..."
+				onkeydown={handleKeydown}
+			></textarea>
+			<div class="coupon-edit-actions">
+				<button class="edit-save-btn" onclick={saveEdit} type="button">Save</button>
+				<button class="edit-cancel-btn" onclick={cancelEdit} type="button">Cancel</button>
+			</div>
+		</div>
 	{:else}
 		<button
 			class="coupon-text-btn"
@@ -73,7 +89,14 @@
 			type="button"
 			disabled={!onedit}
 		>
-			<span class="coupon-text">{coupon.text}</span>
+			<div class="coupon-content">
+				{#if coupon.title.length > 0}
+					<span class="coupon-title">{coupon.title}</span>
+				{/if}
+				{#if coupon.text.length > 0}
+					<span class="coupon-text">{coupon.text}</span>
+				{/if}
+			</div>
 		</button>
 	{/if}
 </div>
@@ -110,17 +133,38 @@
 		cursor: default;
 	}
 
-	.coupon-text {
-		font-size: 14px;
-		font-weight: 600;
+	.coupon-content {
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
+		align-items: center;
+		width: 100%;
+	}
+
+	.coupon-title {
+		font-size: 16px;
+		font-weight: 700;
 		word-break: break-word;
 		color: var(--title-color);
 	}
 
-	.coupon-edit {
+	.coupon-text {
+		font-size: 12px;
+		font-weight: 400;
+		word-break: break-word;
+		color: var(--text-color);
+	}
+
+	.coupon-edit-fields {
 		width: 100%;
 		height: 100%;
-		resize: none;
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
+	}
+
+	.coupon-edit-title {
+		width: 100%;
 		border: 1px solid var(--border-color);
 		border-radius: 4px;
 		padding: 4px;
@@ -130,10 +174,53 @@
 		color: var(--title-color);
 		background-color: var(--bg);
 		font-family: inherit;
+		box-sizing: border-box;
 	}
 
-	.coupon-edit:focus {
+	.coupon-edit-text {
+		width: 100%;
+		flex: 1;
+		resize: none;
+		border: 1px solid var(--border-color);
+		border-radius: 4px;
+		padding: 4px;
+		font-size: 12px;
+		text-align: center;
+		color: var(--text-color);
+		background-color: var(--bg);
+		font-family: inherit;
+		box-sizing: border-box;
+	}
+
+	.coupon-edit-title:focus,
+	.coupon-edit-text:focus {
 		outline: 2px solid #3b82f6;
 		outline-offset: -2px;
+	}
+
+	.coupon-edit-actions {
+		display: flex;
+		gap: 4px;
+		justify-content: center;
+	}
+
+	.edit-save-btn,
+	.edit-cancel-btn {
+		font-size: 11px;
+		padding: 2px 8px;
+		border: 1px solid #e2e8f0;
+		border-radius: 4px;
+		background: #fff;
+		cursor: pointer;
+	}
+
+	.edit-save-btn:hover {
+		background: #f0fdf4;
+		border-color: #86efac;
+	}
+
+	.edit-cancel-btn:hover {
+		background: #fef2f2;
+		border-color: #fca5a5;
 	}
 </style>

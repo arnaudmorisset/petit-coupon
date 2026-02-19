@@ -171,4 +171,50 @@ describe("JsPdfCouponRenderer", () => {
 		expect(blob).toBeInstanceOf(Blob);
 		expect(blob.size).toBeGreaterThan(0);
 	});
+
+	it("renders coupon with title and text", () => {
+		const renderer = new JsPdfCouponRenderer();
+		const coupon = new Coupon(
+			new CouponId("titled"),
+			"Body text here",
+			"My Title",
+		);
+		const blob = renderer.render(
+			[coupon],
+			defaultLayout(),
+			DEFAULT_THEME,
+			emptyFontRegistry,
+		);
+
+		expect(blob).toBeInstanceOf(Blob);
+		expect(blob.size).toBeGreaterThan(0);
+	});
+
+	it("renders coupon with title only (empty text)", () => {
+		const renderer = new JsPdfCouponRenderer();
+		const coupon = new Coupon(new CouponId("title-only"), "", "Title Only");
+		const blob = renderer.render(
+			[coupon],
+			defaultLayout(),
+			DEFAULT_THEME,
+			emptyFontRegistry,
+		);
+
+		expect(blob).toBeInstanceOf(Blob);
+		expect(blob.size).toBeGreaterThan(0);
+	});
+
+	it("renders coupon with text only (empty title) - backward compatible", () => {
+		const renderer = new JsPdfCouponRenderer();
+		const coupon = new Coupon(new CouponId("text-only"), "Just body text");
+		const blob = renderer.render(
+			[coupon],
+			defaultLayout(),
+			DEFAULT_THEME,
+			emptyFontRegistry,
+		);
+
+		expect(blob).toBeInstanceOf(Blob);
+		expect(blob.size).toBeGreaterThan(0);
+	});
 });

@@ -19,7 +19,7 @@ const FONT_SIZE_STEP = 0.5;
 
 export class TextScaler {
 	private readonly minFontSizePt: number;
-	private readonly lineHeightRatio: number;
+	readonly lineHeightRatio: number;
 	private readonly measurer: TextMeasurer;
 
 	constructor(
