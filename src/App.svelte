@@ -1,6 +1,5 @@
 <script lang="ts">
   import AppStepper from './lib/components/AppStepper.svelte'
-  import ClearButton from './lib/components/ClearButton.svelte'
   import { UuidGenerator } from './lib/domain/id-generator'
   import { THEME_REGISTRY } from './lib/domain/themes'
   import { LocalStorageAdapter } from './lib/persistence/local-storage-adapter'
@@ -15,9 +14,6 @@
   const themeStore = new ThemeStore(THEME_REGISTRY)
   const stepperStore = new StepperStore(couponStore)
 
-  const ctx = new AppContext(couponStore, themeStore, stepperStore)
-  ctx.provide()
-
   const storage = new LocalStorageAdapter(localStorage)
   const serializer = new SessionSerializer(THEME_REGISTRY)
   const persistenceManager = new PersistenceManager(
@@ -26,26 +22,12 @@
     couponStore,
     themeStore,
   )
+
+  const ctx = new AppContext(couponStore, themeStore, stepperStore, persistenceManager)
+  ctx.provide()
 </script>
 
 <main>
-  <header class="app-header">
-    <h1>Petit Coupon</h1>
-    <ClearButton onclear={() => persistenceManager.clearSession()} />
-  </header>
+  <h1>Petit Coupon</h1>
   <AppStepper />
 </main>
-
-<style>
-  .app-header {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 16px;
-    margin-bottom: 8px;
-  }
-
-  .app-header h1 {
-    margin: 0;
-  }
-</style>

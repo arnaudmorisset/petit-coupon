@@ -1,35 +1,32 @@
 <script lang="ts">
-	interface Props {
-		onclear: () => void;
-	}
+	import { AppContext } from "../stores/context";
 
-	const { onclear }: Props = $props();
+	const { persistenceManager, stepperStore } = AppContext.current();
 
 	function handleClick(): void {
 		if (confirm("Start fresh? This will remove all coupons and reset the theme.")) {
-			onclear();
+			persistenceManager.clearSession();
+			stepperStore.goTo(1);
 		}
 	}
 </script>
 
-<button class="clear-btn" onclick={handleClick} type="button">
-	Start fresh
+<button class="clear-link" onclick={handleClick} type="button">
+	Start a new batch
 </button>
 
 <style>
-	.clear-btn {
-		font-size: 12px;
-		padding: 4px 12px;
-		border: 1px solid var(--ui-border);
-		border-radius: 6px;
-		background: #fff;
+	.clear-link {
+		all: unset;
+		font-size: 13px;
+		color: inherit;
+		opacity: 0.6;
 		cursor: pointer;
-		color: var(--ui-text-muted);
+		text-decoration: underline;
+		text-underline-offset: 2px;
 	}
 
-	.clear-btn:hover {
-		background: var(--ui-danger-bg);
-		color: var(--ui-danger-text);
-		border-color: var(--ui-danger-border);
+	.clear-link:hover {
+		opacity: 1;
 	}
 </style>

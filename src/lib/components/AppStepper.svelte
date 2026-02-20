@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { AppContext } from "../stores/context";
+	import ClearButton from "./ClearButton.svelte";
 	import CouponForm from "./CouponForm.svelte";
 	import CouponList from "./CouponList.svelte";
 	import DownloadButton from "./DownloadButton.svelte";
@@ -49,6 +50,7 @@
 			<SheetPreview />
 			<div class="download-area">
 				<DownloadButton />
+				<ClearButton />
 			</div>
 		{/if}
 	</div>
@@ -174,7 +176,9 @@
 	.download-area {
 		margin-top: 20px;
 		display: flex;
-		justify-content: center;
+		flex-direction: column;
+		align-items: center;
+		gap: 12px;
 	}
 
 	.step-navigation {
