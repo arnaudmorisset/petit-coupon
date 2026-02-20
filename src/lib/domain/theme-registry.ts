@@ -2,9 +2,11 @@ import type { Theme, ThemeCategory } from "./theme";
 
 export class ThemeRegistry {
 	readonly themes: readonly Theme[];
+	private readonly defaultTheme: Theme;
 
 	constructor(themes: readonly Theme[]) {
-		if (themes.length === 0) {
+		const first = themes[0];
+		if (first === undefined) {
 			throw new Error("ThemeRegistry requires at least one theme");
 		}
 
@@ -14,6 +16,7 @@ export class ThemeRegistry {
 		}
 
 		this.themes = themes;
+		this.defaultTheme = first;
 	}
 
 	getAll(): readonly Theme[] {
@@ -21,8 +24,7 @@ export class ThemeRegistry {
 	}
 
 	getDefault(): Theme {
-		// Safe: constructor guarantees at least one theme
-		return this.themes[0] as Theme;
+		return this.defaultTheme;
 	}
 
 	getById(id: string): Theme {

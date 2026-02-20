@@ -9,6 +9,7 @@ export class PersistenceManager {
 	private readonly couponStore: CouponStore;
 	private readonly themeStore: ThemeStore;
 	private saveTimeout: ReturnType<typeof setTimeout> | null = null;
+	private initialized = false;
 
 	constructor(
 		storage: AppStorage,
@@ -44,9 +45,13 @@ export class PersistenceManager {
 
 	private setupAutoSave(): void {
 		$effect(() => {
-			// Access reactive state to track changes
 			const _coupons = this.couponStore.coupons;
 			const _theme = this.themeStore.selectedTheme;
+
+			if (!this.initialized) {
+				this.initialized = true;
+				return;
+			}
 
 			if (this.saveTimeout) {
 				clearTimeout(this.saveTimeout);
@@ -56,6 +61,12 @@ export class PersistenceManager {
 				const data = this.serializer.serialize(_theme.id, _coupons);
 				this.storage.save(data);
 			}, 300);
+
+			return () => {
+				if (this.saveTimeout) {
+					clearTimeout(this.saveTimeout);
+				}
+			};
 		});
 	}
 }

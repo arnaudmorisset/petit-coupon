@@ -1,20 +1,12 @@
 <script lang="ts">
-	import type { CouponStore } from "../stores/coupon-store.svelte";
-	import type { StepperStore } from "../stores/stepper-store.svelte";
-	import type { ThemeStore } from "../stores/theme-store.svelte";
+	import { AppContext } from "../stores/context";
 	import CouponForm from "./CouponForm.svelte";
 	import CouponList from "./CouponList.svelte";
 	import DownloadButton from "./DownloadButton.svelte";
 	import SheetPreview from "./SheetPreview.svelte";
 	import ThemePicker from "./ThemePicker.svelte";
 
-	interface Props {
-		store: CouponStore;
-		themeStore: ThemeStore;
-		stepperStore: StepperStore;
-	}
-
-	const { store, themeStore, stepperStore }: Props = $props();
+	const { couponStore: store, stepperStore } = AppContext.current();
 
 	const steps = [
 		{ number: 1, label: "Choose a Theme" },
@@ -46,17 +38,17 @@
 	<div class="step-content">
 		{#if stepperStore.currentStep === 1}
 			<h2 class="step-title">Choose a Theme</h2>
-			<ThemePicker {themeStore} />
+			<ThemePicker />
 		{:else if stepperStore.currentStep === 2}
 			<h2 class="step-title">Create Coupons</h2>
-			<CouponForm {store} />
+			<CouponForm />
 			<p class="coupon-count">{store.count} coupon{store.count !== 1 ? 's' : ''}</p>
-			<CouponList {store} theme={themeStore.selectedTheme} />
+			<CouponList />
 		{:else if stepperStore.currentStep === 3}
 			<h2 class="step-title">Preview & Download</h2>
-			<SheetPreview coupons={store.coupons} theme={themeStore.selectedTheme} />
+			<SheetPreview />
 			<div class="download-area">
-				<DownloadButton {store} theme={themeStore.selectedTheme} />
+				<DownloadButton />
 			</div>
 		{/if}
 	</div>
@@ -121,46 +113,46 @@
 		width: 32px;
 		height: 32px;
 		border-radius: 50%;
-		border: 2px solid #cbd5e1;
+		border: 2px solid var(--ui-border-hover);
 		font-size: 14px;
 		font-weight: 600;
-		color: #64748b;
+		color: var(--ui-text-muted);
 		transition: all 0.15s;
 	}
 
 	.step-indicator.active .step-number {
-		background-color: #3b82f6;
-		border-color: #3b82f6;
+		background-color: var(--ui-primary);
+		border-color: var(--ui-primary);
 		color: #fff;
 	}
 
 	.step-indicator.completed .step-number {
-		background-color: #10b981;
-		border-color: #10b981;
+		background-color: var(--ui-success);
+		border-color: var(--ui-success);
 		color: #fff;
 	}
 
 	.step-label {
 		font-size: 11px;
-		color: #64748b;
+		color: var(--ui-text-muted);
 		font-weight: 500;
 		white-space: nowrap;
 	}
 
 	.step-indicator.active .step-label {
-		color: #3b82f6;
+		color: var(--ui-primary);
 		font-weight: 600;
 	}
 
 	.step-connector {
 		width: 40px;
 		height: 2px;
-		background-color: #e2e8f0;
+		background-color: var(--ui-border);
 		margin-bottom: 20px;
 	}
 
 	.step-connector.filled {
-		background-color: #10b981;
+		background-color: var(--ui-success);
 	}
 
 	.step-content {
@@ -175,7 +167,7 @@
 
 	.coupon-count {
 		font-size: 14px;
-		color: #64748b;
+		color: var(--ui-text-muted);
 		margin: 8px 0;
 	}
 
@@ -198,16 +190,16 @@
 		font-size: 14px;
 		font-weight: 500;
 		cursor: pointer;
-		border: 1px solid #e2e8f0;
+		border: 1px solid var(--ui-border);
 		background: #fff;
-		color: #475569;
+		color: var(--ui-text-secondary);
 		transition: all 0.15s;
 		min-width: 100px;
 	}
 
 	.nav-btn:hover:not(:disabled) {
-		background: #f8fafc;
-		border-color: #94a3b8;
+		background: var(--ui-bg-subtle);
+		border-color: var(--ui-border-active);
 	}
 
 	.nav-btn:disabled {
@@ -216,14 +208,14 @@
 	}
 
 	.nav-btn-primary {
-		background: #3b82f6;
-		border-color: #3b82f6;
+		background: var(--ui-primary);
+		border-color: var(--ui-primary);
 		color: #fff;
 	}
 
 	.nav-btn-primary:hover:not(:disabled) {
-		background: #2563eb;
-		border-color: #2563eb;
+		background: var(--ui-primary-hover);
+		border-color: var(--ui-primary-hover);
 	}
 
 	@media (max-width: 640px) {

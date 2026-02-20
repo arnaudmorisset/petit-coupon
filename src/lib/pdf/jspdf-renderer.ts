@@ -5,6 +5,7 @@ import type { GridPosition } from "../domain/grid-position";
 import type { LayoutEngine } from "../domain/layout-engine";
 import { TextScaler } from "../domain/text-scaler";
 import type { Theme } from "../domain/theme";
+import { PT_TO_MM } from "../domain/units";
 import type { CouponAssetRenderer } from "./coupon-asset-renderer";
 import type { FontRegistry } from "./font-registry";
 import type { CouponRenderer } from "./renderer";
@@ -29,7 +30,6 @@ const TITLE_FONT_SIZE_PT = 14;
 const BODY_FONT_SIZE_PT = 10;
 const MIN_FONT_SIZE_PT = 6;
 const LINE_HEIGHT_RATIO = 1.3;
-const PT_TO_MM = 25.4 / 72;
 
 export class JsPdfCouponRenderer implements CouponRenderer {
 	private readonly assetRenderer: CouponAssetRenderer | null;

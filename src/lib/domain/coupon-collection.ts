@@ -1,6 +1,11 @@
 import { Coupon } from "./coupon";
 import type { CouponId } from "./coupon-id";
 
+interface CouponEntry {
+	readonly index: number;
+	readonly coupon: Coupon;
+}
+
 export class CouponCollection {
 	private readonly coupons: Coupon[] = [];
 
@@ -9,13 +14,12 @@ export class CouponCollection {
 	}
 
 	remove(id: CouponId): void {
-		const index = this.findIndexOrThrow(id);
+		const { index } = this.findEntryOrThrow(id);
 		this.coupons.splice(index, 1);
 	}
 
 	edit(id: CouponId, updates: Partial<Coupon>): Coupon {
-		const index = this.findIndexOrThrow(id);
-		const existing = this.coupons[index] as Coupon;
+		const { index, coupon: existing } = this.findEntryOrThrow(id);
 		const newText = updates.text ?? existing.text;
 		const newTitle = updates.title ?? existing.title;
 
@@ -29,7 +33,7 @@ export class CouponCollection {
 	}
 
 	move(id: CouponId, direction: "up" | "down"): void {
-		const index = this.findIndexOrThrow(id);
+		const { index, coupon: current } = this.findEntryOrThrow(id);
 
 		if (direction === "up" && index === 0) {
 			return;
@@ -39,8 +43,7 @@ export class CouponCollection {
 		}
 
 		const targetIndex = direction === "up" ? index - 1 : index + 1;
-		const current = this.coupons[index] as Coupon;
-		const target = this.coupons[targetIndex] as Coupon;
+		const target = this.couponAt(targetIndex);
 		this.coupons[index] = target;
 		this.coupons[targetIndex] = current;
 	}
@@ -57,8 +60,9 @@ export class CouponCollection {
 			);
 		}
 
-		const [coupon] = this.coupons.splice(fromIndex, 1);
-		this.coupons.splice(toIndex, 0, coupon as Coupon);
+		const coupon = this.couponAt(fromIndex);
+		this.coupons.splice(fromIndex, 1);
+		this.coupons.splice(toIndex, 0, coupon);
 	}
 
 	getAll(): Coupon[] {
@@ -73,11 +77,19 @@ export class CouponCollection {
 		return this.coupons.length === 0;
 	}
 
-	private findIndexOrThrow(id: CouponId): number {
+	private couponAt(index: number): Coupon {
+		const coupon = this.coupons[index];
+		if (coupon === undefined) {
+			throw new Error(`No coupon at index ${String(index)}`);
+		}
+		return coupon;
+	}
+
+	private findEntryOrThrow(id: CouponId): CouponEntry {
 		const index = this.coupons.findIndex((c) => c.id.equals(id));
 		if (index === -1) {
 			throw new Error(`Coupon with id "${id.value}" not found`);
 		}
-		return index;
+		return { index, coupon: this.couponAt(index) };
 	}
 }

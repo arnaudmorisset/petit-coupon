@@ -1,4 +1,5 @@
 import type { TextMeasurer } from "./text-measurer";
+import { PT_TO_MM } from "./units";
 
 export interface TextScaleParams {
 	readonly text: string;
@@ -13,8 +14,6 @@ export interface TextScaleResult {
 	readonly lines: readonly string[];
 	readonly fits: boolean;
 }
-
-const PT_TO_MM = 25.4 / 72;
 const FONT_SIZE_STEP = 0.5;
 
 export class TextScaler {

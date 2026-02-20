@@ -1,12 +1,8 @@
 <script lang="ts">
 	import { Coupon } from "../domain/coupon";
-	import type { CouponStore } from "../stores/coupon-store.svelte";
+	import { AppContext } from "../stores/context";
 
-	interface Props {
-		store: CouponStore;
-	}
-
-	const { store }: Props = $props();
+	const { couponStore: store } = AppContext.current();
 
 	let title = $state("");
 	let text = $state("");
@@ -30,12 +26,14 @@
 			class="coupon-title-input"
 			bind:value={title}
 			placeholder="Title (optional)"
+			aria-label="Coupon title"
 		/>
 		<textarea
 			class="coupon-input"
 			bind:value={text}
 			placeholder="Enter coupon text..."
 			rows="2"
+			aria-label="Coupon text"
 		></textarea>
 	</div>
 	<button class="add-btn" type="submit" disabled={!hasContent}>
@@ -62,7 +60,7 @@
 
 	.coupon-title-input {
 		padding: 8px 12px;
-		border: 1px solid #e2e8f0;
+		border: 1px solid var(--ui-border);
 		border-radius: 8px;
 		font-size: 14px;
 		font-family: inherit;
@@ -71,14 +69,14 @@
 	}
 
 	.coupon-title-input:focus {
-		outline: 2px solid #3b82f6;
+		outline: 2px solid var(--ui-primary);
 		outline-offset: -1px;
-		border-color: #3b82f6;
+		border-color: var(--ui-primary);
 	}
 
 	.coupon-input {
 		padding: 8px 12px;
-		border: 1px solid #e2e8f0;
+		border: 1px solid var(--ui-border);
 		border-radius: 8px;
 		font-size: 14px;
 		font-family: inherit;
@@ -87,9 +85,9 @@
 	}
 
 	.coupon-input:focus {
-		outline: 2px solid #3b82f6;
+		outline: 2px solid var(--ui-primary);
 		outline-offset: -1px;
-		border-color: #3b82f6;
+		border-color: var(--ui-primary);
 	}
 
 	.add-btn {

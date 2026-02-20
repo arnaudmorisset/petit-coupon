@@ -1,28 +1,24 @@
 <script lang="ts">
 	import type { Coupon } from "../domain/coupon";
 	import type { CouponId } from "../domain/coupon-id";
-	import type { Theme } from "../domain/theme";
+	import { borderStyleToCss } from "../domain/border-style";
+	import { AppContext } from "../stores/context";
 	import SvgIllustration from "./SvgIllustration.svelte";
 	import SvgOrnament from "./SvgOrnament.svelte";
 	import SvgPattern from "./SvgPattern.svelte";
 
 	interface Props {
 		coupon: Coupon;
-		theme: Theme;
 		onedit?: (id: CouponId, updates: Partial<Coupon>) => void;
 	}
 
-	const { coupon, theme, onedit }: Props = $props();
+	const { coupon, onedit }: Props = $props();
+	const { themeStore } = AppContext.current();
+	const theme = $derived(themeStore.selectedTheme);
 
 	let editing = $state(false);
 	let editTitle = $state("");
 	let editText = $state("");
-
-	function borderStyleCss(style: string): string {
-		if (style === "double") return "double";
-		if (style === "dashed") return "dashed";
-		return "solid";
-	}
 
 	function startEdit(): void {
 		if (!onedit) return;
@@ -60,7 +56,7 @@
 	style:--bg={theme.backgroundColor}
 	style:--border-color={theme.borderColor}
 	style:--border-width="{Math.max(1, theme.borderWidthMm * 2)}px"
-	style:--border-style={borderStyleCss(theme.borderStyle)}
+	style:--border-style={borderStyleToCss(theme.borderStyle)}
 	style:--border-radius="{theme.borderRadiusMm * 1.5}px"
 	style:--padding="{theme.paddingMm * 1.5}px"
 	style:--title-color={theme.titleColor}
@@ -88,12 +84,14 @@
 				bind:value={editTitle}
 				placeholder="Title (optional)"
 				onkeydown={handleKeydown}
+				aria-label="Edit coupon title"
 			/>
 			<textarea
 				class="coupon-edit-text"
 				bind:value={editText}
 				placeholder="Coupon text..."
 				onkeydown={handleKeydown}
+				aria-label="Edit coupon text"
 			></textarea>
 			<div class="coupon-edit-actions">
 				<button class="edit-save-btn" onclick={saveEdit} type="button">Save</button>
@@ -217,7 +215,7 @@
 
 	.coupon-edit-title:focus,
 	.coupon-edit-text:focus {
-		outline: 2px solid #3b82f6;
+		outline: 2px solid var(--ui-primary);
 		outline-offset: -2px;
 	}
 
@@ -231,19 +229,19 @@
 	.edit-cancel-btn {
 		font-size: 11px;
 		padding: 2px 8px;
-		border: 1px solid #e2e8f0;
+		border: 1px solid var(--ui-border);
 		border-radius: 4px;
 		background: #fff;
 		cursor: pointer;
 	}
 
 	.edit-save-btn:hover {
-		background: #f0fdf4;
-		border-color: #86efac;
+		background: var(--ui-save-bg);
+		border-color: var(--ui-save-border);
 	}
 
 	.edit-cancel-btn:hover {
-		background: #fef2f2;
-		border-color: #fca5a5;
+		background: var(--ui-danger-bg);
+		border-color: var(--ui-danger-border);
 	}
 </style>

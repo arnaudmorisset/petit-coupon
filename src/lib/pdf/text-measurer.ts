@@ -1,7 +1,6 @@
 import type { jsPDF } from "jspdf";
 import type { TextMeasurer } from "../domain/text-measurer";
-
-const PT_TO_MM = 25.4 / 72;
+import { PT_TO_MM } from "../domain/units";
 
 export class JsPdfTextMeasurer implements TextMeasurer {
 	private readonly doc: jsPDF;

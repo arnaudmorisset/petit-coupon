@@ -1,3 +1,5 @@
+import { PT_TO_MM } from "./units";
+
 export interface TextMeasurer {
 	measureTextWidthMm(
 		text: string,
@@ -5,8 +7,6 @@ export interface TextMeasurer {
 		fontName: string,
 	): number;
 }
-
-const PT_TO_MM = 25.4 / 72;
 
 export class EstimatedTextMeasurer implements TextMeasurer {
 	private readonly avgCharWidthRatio: number;

@@ -2,6 +2,7 @@
 	import type { Theme } from "../domain/theme";
 	import SvgIllustration from "./SvgIllustration.svelte";
 	import SvgOrnament from "./SvgOrnament.svelte";
+	import { borderStyleToCss } from "../domain/border-style";
 	import SvgPattern from "./SvgPattern.svelte";
 
 	interface Props {
@@ -11,12 +12,6 @@
 	}
 
 	const { theme, isSelected, onselect }: Props = $props();
-
-	function borderStyleCss(style: string): string {
-		if (style === "double") return "double";
-		if (style === "dashed") return "dashed";
-		return "solid";
-	}
 </script>
 
 <button
@@ -24,10 +19,12 @@
 	class:selected={isSelected}
 	onclick={onselect}
 	type="button"
+	aria-label="Select {theme.name} theme"
+	aria-pressed={isSelected}
 	style:--preview-bg={theme.backgroundColor}
 	style:--preview-border-color={theme.borderColor}
 	style:--preview-border-width="{Math.max(1, theme.borderWidthMm * 2)}px"
-	style:--preview-border-style={borderStyleCss(theme.borderStyle)}
+	style:--preview-border-style={borderStyleToCss(theme.borderStyle)}
 	style:--preview-border-radius="{theme.borderRadiusMm * 1.5}px"
 	style:--preview-title-color={theme.titleColor}
 >
@@ -69,11 +66,11 @@
 	}
 
 	.theme-card:hover {
-		border-color: #cbd5e1;
+		border-color: var(--ui-border-hover);
 	}
 
 	.theme-card.selected {
-		border-color: #3b82f6;
+		border-color: var(--ui-primary);
 	}
 
 	.preview {
@@ -102,11 +99,11 @@
 	.theme-name {
 		font-size: 13px;
 		font-weight: 600;
-		color: #1e293b;
+		color: var(--ui-text-heading);
 	}
 
 	.theme-desc {
 		font-size: 11px;
-		color: #64748b;
+		color: var(--ui-text-muted);
 	}
 </style>

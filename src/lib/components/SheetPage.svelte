@@ -1,26 +1,22 @@
 <script lang="ts">
+	import { borderStyleToCss } from "../domain/border-style";
 	import type { CouponDimensions } from "../domain/coupon-dimensions";
-	import type { PageData } from "../domain/sheet-preview-data";
-	import type { Theme } from "../domain/theme";
 	import type { PageFormat } from "../domain/page-format";
+	import type { PageData } from "../domain/sheet-preview-data";
+	import { AppContext } from "../stores/context";
 	import SvgIllustration from "./SvgIllustration.svelte";
 	import SvgOrnament from "./SvgOrnament.svelte";
 	import SvgPattern from "./SvgPattern.svelte";
 
 	interface Props {
 		page: PageData;
-		theme: Theme;
 		couponDimensions: CouponDimensions;
 		pageFormat: PageFormat;
 	}
 
-	const { page, theme, couponDimensions, pageFormat }: Props = $props();
-
-	function borderStyleCss(style: string): string {
-		if (style === "double") return "double";
-		if (style === "dashed") return "dashed";
-		return "solid";
-	}
+	const { page, couponDimensions, pageFormat }: Props = $props();
+	const { themeStore } = AppContext.current();
+	const theme = $derived(themeStore.selectedTheme);
 </script>
 
 <div class="sheet-page">
@@ -39,7 +35,7 @@
 				style:--bg={theme.backgroundColor}
 				style:--border-color={theme.borderColor}
 				style:--border-width="{Math.max(1, theme.borderWidthMm * 1.5)}px"
-				style:--border-style={borderStyleCss(theme.borderStyle)}
+				style:--border-style={borderStyleToCss(theme.borderStyle)}
 				style:--border-radius="{theme.borderRadiusMm}px"
 				style:--title-color={theme.titleColor}
 			>
@@ -81,7 +77,7 @@
 
 	.page-label {
 		font-size: 12px;
-		color: #64748b;
+		color: var(--ui-text-muted);
 		font-weight: 500;
 	}
 
@@ -90,7 +86,7 @@
 		width: 100%;
 		aspect-ratio: var(--page-aspect);
 		background: #fff;
-		border: 1px solid #e2e8f0;
+		border: 1px solid var(--ui-border);
 		border-radius: 4px;
 		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 		overflow: hidden;

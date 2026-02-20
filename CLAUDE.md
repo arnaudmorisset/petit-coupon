@@ -43,6 +43,8 @@ Pure TypeScript classes — zero framework dependency. Each concept is its own f
 - `Theme` interface + `DEFAULT_THEME` constant — extended with `ThemeCategory`, `BorderStyle`, title font, accent color, padding, and border style
 - `ThemeRegistry` — holds all themes, lookups by ID or category, validates uniqueness
 - `themes.ts` — 4 theme definitions (`classic`, `romantic`, `sunshine`, `midnight`) + `ALL_THEMES` array + `THEME_REGISTRY` instance. Each theme wires in its decorative assets (patterns, ornaments, illustrations)
+- `units.ts` — shared constants (`PT_TO_MM`)
+- `border-style.ts` — `borderStyleToCss()` maps `BorderStyle` to CSS values
 
 ### Asset Library (`src/lib/assets/`)
 SVG path data constants for theme decorations. All designs use normalized viewBoxes, scaled at render time:
@@ -70,13 +72,14 @@ SVG path data constants for theme decorations. All designs use normalized viewBo
 - `SessionSerializer` — converts between domain objects (`Coupon`) and `SessionData`. Resilient deserialization: validates theme IDs via `ThemeRegistry`, filters invalid coupons, falls back to defaults on error. Writes `version: 1` on serialize; handles old format (no version) gracefully on deserialize
 
 ### Store Layer (`src/lib/stores/`)
-- `CouponStore` — Svelte 5 reactive class wrapping `CouponCollection`, uses `$state`. Owns `IdGenerator` and exposes `nextId()`. Methods: `add(coupon)`, `remove`, `editCoupon(id, updates: Partial<Coupon>)`, `moveCoupon`, `loadCoupons`
+- `AppContext` — wraps `CouponStore`, `ThemeStore`, `StepperStore` in a class with `provide()` (calls `setContext`) and `static current()` (calls `getContext`). Set in `App.svelte`, consumed by components via `AppContext.current()`
+- `CouponStore` — Svelte 5 reactive class wrapping `CouponCollection`, uses `$state`. Owns `IdGenerator` and exposes `nextId()`. Methods: `add(coupon)`, `remove`, `editCoupon(id, updates: Partial<Coupon>)`, `moveCoupon`, `loadCoupons`. Uses `mutate()` pattern for guaranteed state sync
 - `ThemeStore` — Svelte 5 reactive class wrapping `ThemeRegistry`, exposes `selectedTheme` and `selectTheme(id)`
 - `StepperStore` — manages 3-step navigation (Theme → Create → Preview & Download), guards step 3 behind coupon existence
-- `PersistenceManager` — auto-saves session (theme + coupons) to `AppStorage` via `$effect` with 300ms debounce, restores on construction, exposes `clearSession()`
+- `PersistenceManager` — auto-saves session (theme + coupons) to `AppStorage` via `$effect` with 300ms debounce and cleanup function, skips redundant save on initial mount, restores on construction, exposes `clearSession()`
 
 ### UI Layer (`src/lib/components/`)
-Thin Svelte 5 components. Components receive stores/data via props. No business logic in components.
+Thin Svelte 5 components. Components access stores via `AppContext.current()` — no prop drilling. No business logic in components.
 
 - `AppStepper` — 3-step guided flow with step indicators and Back/Next navigation
 - `CouponForm` — title input + body textarea to add coupons, enabled when at least one field is non-empty, responsive (stacks vertically on mobile)
@@ -85,10 +88,11 @@ Thin Svelte 5 components. Components receive stores/data via props. No business 
 - `SheetPreview` — WYSIWYG multi-page A4 preview using `LayoutEngine` and `SheetPreviewData`
 - `SheetPage` — renders one A4 page with absolutely-positioned coupon cells (percentage-based coordinates), shows title + body
 - `ClearButton` — "Start fresh" button with browser `confirm()` dialog, calls `PersistenceManager.clearSession()`
-- `DownloadButton` — creates `CouponAssetRenderer(new SvgPathRenderer())` and passes it to `JsPdfCouponRenderer`
-- `ThemePicker`, `ThemePreviewCard` — theme selection UI; preview cards show decorative SVG assets
+- `DownloadButton` — creates `CouponAssetRenderer(new SvgPathRenderer())` and passes it to `JsPdfCouponRenderer`. Shows loading state during generation, catches errors with user-visible feedback
+- `ThemePicker`, `ThemePreviewCard` — theme selection UI; preview cards show decorative SVG assets with `aria-label` and `aria-pressed`
 - `SvgPattern`, `SvgOrnament`, `SvgIllustration` — CSS preview components rendering theme assets as inline SVGs (positioned absolutely, pointer-events none). Used in `CouponPreview`, `SheetPage`, and `ThemePreviewCard`
-- Theme-dependent styling uses CSS custom properties (`style:--var-name`) set on elements, referenced in `<style>` blocks — not inline `style:property` attributes.
+- Theme-dependent styling uses CSS custom properties (`style:--var-name`) set on elements, referenced in `<style>` blocks — not inline `style:property` attributes
+- UI color palette defined as CSS custom properties on `:root` in `app.css` (`--ui-primary`, `--ui-border`, `--ui-text-muted`, etc.). Never use raw hex colors in component `<style>` blocks
 - Responsive breakpoint at 640px (mobile below, desktop above)
 
 ## Development Guidelines
@@ -104,6 +108,10 @@ Thin Svelte 5 components. Components receive stores/data via props. No business 
 - **Deferred resource cleanup** — when triggering browser downloads via object URLs, defer `URL.revokeObjectURL` with `setTimeout` to allow the browser to start the download. Never revoke synchronously after `click()`.
 - **Error boundaries at I/O layers** — wrap external library calls (jsPDF, font registration, PDF output) in try-catch and throw domain-specific errors (`RenderError`). Callers should handle these errors with user-visible feedback.
 - **Pair parallel arrays by construction** — when two arrays are correlated by index (e.g. coupons and positions), zip them into a single array of typed pairs (`CouponPlacement`) upfront. Never use `indexOf` for cross-array lookup — it relies on reference equality and silently fails.
+- **Shared domain utilities** — extract duplicated constants (`PT_TO_MM` in `units.ts`) and functions (`borderStyleToCss` in `border-style.ts`) into the domain layer. Never duplicate logic across files.
+- **UI color palette** — all UI colors must reference CSS custom properties defined in `app.css` (e.g. `var(--ui-primary)`). Never use raw hex colors in component `<style>` blocks.
+- **Svelte context for stores** — use `AppContext` (Svelte `setContext`/`getContext`) to provide stores at the root. Components read stores via `AppContext.current()` — never pass stores as props.
+- **Accessibility** — form inputs must have `aria-label` attributes. Interactive elements (theme cards, toggle buttons) must have descriptive `aria-label` and `aria-pressed` where applicable.
 
 ## Testing
 

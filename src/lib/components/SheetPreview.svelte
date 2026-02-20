@@ -1,20 +1,15 @@
 <script lang="ts">
-	import type { Coupon } from "../domain/coupon";
 	import { CouponDimensions } from "../domain/coupon-dimensions";
 	import { LayoutConfig } from "../domain/layout-config";
 	import { LayoutEngine } from "../domain/layout-engine";
 	import { Margins } from "../domain/margins";
 	import { PageFormat } from "../domain/page-format";
 	import { SheetPreviewData } from "../domain/sheet-preview-data";
-	import type { Theme } from "../domain/theme";
+	import { AppContext } from "../stores/context";
 	import SheetPage from "./SheetPage.svelte";
 
-	interface Props {
-		coupons: readonly Coupon[];
-		theme: Theme;
-	}
-
-	const { coupons, theme }: Props = $props();
+	const { couponStore } = AppContext.current();
+	const coupons = $derived(couponStore.coupons);
 
 	const layout = new LayoutEngine(
 		new LayoutConfig(
@@ -37,7 +32,6 @@
 		{#each pages as page (page.pageNumber)}
 			<SheetPage
 				{page}
-				{theme}
 				couponDimensions={layout.config.couponDimensions}
 				pageFormat={layout.config.pageFormat}
 			/>
@@ -47,7 +41,7 @@
 
 <style>
 	.empty-state {
-		color: #64748b;
+		color: var(--ui-text-muted);
 		font-style: italic;
 		text-align: center;
 	}

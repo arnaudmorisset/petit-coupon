@@ -5,21 +5,25 @@
   import { THEME_REGISTRY } from './lib/domain/themes'
   import { LocalStorageAdapter } from './lib/persistence/local-storage-adapter'
   import { SessionSerializer } from './lib/persistence/session-serializer'
+  import { AppContext } from './lib/stores/context'
   import { CouponStore } from './lib/stores/coupon-store.svelte'
   import { PersistenceManager } from './lib/stores/persistence-manager.svelte'
   import { StepperStore } from './lib/stores/stepper-store.svelte'
   import { ThemeStore } from './lib/stores/theme-store.svelte'
 
-  const store = new CouponStore(new UuidGenerator())
+  const couponStore = new CouponStore(new UuidGenerator())
   const themeStore = new ThemeStore(THEME_REGISTRY)
-  const stepperStore = new StepperStore(store)
+  const stepperStore = new StepperStore(couponStore)
+
+  const ctx = new AppContext(couponStore, themeStore, stepperStore)
+  ctx.provide()
 
   const storage = new LocalStorageAdapter(localStorage)
   const serializer = new SessionSerializer(THEME_REGISTRY)
   const persistenceManager = new PersistenceManager(
     storage,
     serializer,
-    store,
+    couponStore,
     themeStore,
   )
 </script>
@@ -29,7 +33,7 @@
     <h1>Petit Coupon</h1>
     <ClearButton onclear={() => persistenceManager.clearSession()} />
   </header>
-  <AppStepper {store} {themeStore} {stepperStore} />
+  <AppStepper />
 </main>
 
 <style>

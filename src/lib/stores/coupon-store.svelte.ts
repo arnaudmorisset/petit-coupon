@@ -25,33 +25,35 @@ export class CouponStore {
 	}
 
 	add(coupon: Coupon): void {
-		this.collection.add(coupon);
-		this.coupons = this.collection.getAll();
+		this.mutate(() => this.collection.add(coupon));
 	}
 
 	remove(id: CouponId): void {
-		this.collection.remove(id);
-		this.coupons = this.collection.getAll();
+		this.mutate(() => this.collection.remove(id));
 	}
 
 	editCoupon(id: CouponId, updates: Partial<Coupon>): void {
-		this.collection.edit(id, updates);
-		this.coupons = this.collection.getAll();
+		this.mutate(() => this.collection.edit(id, updates));
 	}
 
 	moveCoupon(id: CouponId, direction: "up" | "down"): void {
-		this.collection.move(id, direction);
-		this.coupons = this.collection.getAll();
+		this.mutate(() => this.collection.move(id, direction));
 	}
 
 	loadCoupons(coupons: readonly Coupon[]): void {
-		const current = this.collection.getAll();
-		for (const c of current) {
-			this.collection.remove(c.id);
-		}
-		for (const c of coupons) {
-			this.collection.add(c);
-		}
+		this.mutate(() => {
+			const current = this.collection.getAll();
+			for (const c of current) {
+				this.collection.remove(c.id);
+			}
+			for (const c of coupons) {
+				this.collection.add(c);
+			}
+		});
+	}
+
+	private mutate(fn: () => void): void {
+		fn();
 		this.coupons = this.collection.getAll();
 	}
 }

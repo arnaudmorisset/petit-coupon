@@ -1,3 +1,8 @@
+/**
+ * Narrow drawing interface over jsPDF. Methods return `unknown` so that
+ * jsPDF's chainable `this` return type is structurally compatible without
+ * importing jsPDF types — test mocks can return `undefined`.
+ */
 export interface PdfDrawingContext {
 	moveTo(x: number, y: number): unknown;
 	lineTo(x: number, y: number): unknown;

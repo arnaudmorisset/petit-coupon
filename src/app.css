@@ -11,6 +11,24 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  /* UI palette */
+  --ui-primary: #3b82f6;
+  --ui-primary-hover: #2563eb;
+  --ui-success: #10b981;
+  --ui-danger-text: #dc2626;
+  --ui-danger-bg: #fee2e2;
+  --ui-danger-border: #fca5a5;
+  --ui-save-bg: #f0fdf4;
+  --ui-save-border: #86efac;
+  --ui-border: #e2e8f0;
+  --ui-border-hover: #cbd5e1;
+  --ui-border-active: #94a3b8;
+  --ui-text-muted: #64748b;
+  --ui-text-secondary: #475569;
+  --ui-text-heading: #1e293b;
+  --ui-bg-subtle: #f8fafc;
+  --ui-bg-hover: #f1f5f9;
 }
 
 a {

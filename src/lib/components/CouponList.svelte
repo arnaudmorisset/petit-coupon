@@ -1,16 +1,10 @@
 <script lang="ts">
 	import type { Coupon } from "../domain/coupon";
 	import type { CouponId } from "../domain/coupon-id";
-	import type { Theme } from "../domain/theme";
-	import type { CouponStore } from "../stores/coupon-store.svelte";
+	import { AppContext } from "../stores/context";
 	import CouponPreview from "./CouponPreview.svelte";
 
-	interface Props {
-		store: CouponStore;
-		theme: Theme;
-	}
-
-	const { store, theme }: Props = $props();
+	const { couponStore: store } = AppContext.current();
 
 	function handleRemove(id: CouponId): void {
 		store.remove(id);
@@ -51,7 +45,7 @@
 						aria-label="Move down"
 					>&#8595;</button>
 				</div>
-				<CouponPreview {coupon} {theme} onedit={handleEdit} />
+				<CouponPreview {coupon} onedit={handleEdit} />
 				<button class="remove-btn" onclick={() => handleRemove(coupon.id)}>Remove</button>
 			</li>
 		{/each}
@@ -60,7 +54,7 @@
 
 <style>
 	.empty-message {
-		color: #64748b;
+		color: var(--ui-text-muted);
 		font-style: italic;
 	}
 
@@ -88,11 +82,11 @@
 	.reorder-btn {
 		font-size: 14px;
 		padding: 2px 10px;
-		border: 1px solid #e2e8f0;
+		border: 1px solid var(--ui-border);
 		border-radius: 4px;
 		background: #fff;
 		cursor: pointer;
-		color: #475569;
+		color: var(--ui-text-secondary);
 		min-width: 36px;
 		min-height: 36px;
 		display: flex;
@@ -101,8 +95,8 @@
 	}
 
 	.reorder-btn:hover:not(:disabled) {
-		background: #f1f5f9;
-		border-color: #94a3b8;
+		background: var(--ui-bg-hover);
+		border-color: var(--ui-border-active);
 	}
 
 	.reorder-btn:disabled {
@@ -113,17 +107,17 @@
 	.remove-btn {
 		font-size: 12px;
 		padding: 4px 10px;
-		border: 1px solid #e2e8f0;
+		border: 1px solid var(--ui-border);
 		border-radius: 4px;
 		background: #fff;
 		cursor: pointer;
-		color: #64748b;
+		color: var(--ui-text-muted);
 	}
 
 	.remove-btn:hover {
-		background: #fee2e2;
-		color: #dc2626;
-		border-color: #fca5a5;
+		background: var(--ui-danger-bg);
+		color: var(--ui-danger-text);
+		border-color: var(--ui-danger-border);
 	}
 
 	@media (max-width: 640px) {

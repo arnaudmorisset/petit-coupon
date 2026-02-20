@@ -1,7 +1,7 @@
 import type { TextScaler } from "./text-scaler";
 import type { IllustrationAsset } from "./theme-assets";
+import { PT_TO_MM } from "./units";
 
-const PT_TO_MM = 25.4 / 72;
 const TITLE_BODY_GAP_MM = 2;
 const ILLUSTRATION_GAP_MM = 2;
 

@@ -1,12 +1,8 @@
 <script lang="ts">
-	import type { ThemeStore } from "../stores/theme-store.svelte";
+	import { AppContext } from "../stores/context";
 	import ThemePreviewCard from "./ThemePreviewCard.svelte";
 
-	interface Props {
-		themeStore: ThemeStore;
-	}
-
-	const { themeStore }: Props = $props();
+	const { themeStore } = AppContext.current();
 </script>
 
 <div class="theme-picker">

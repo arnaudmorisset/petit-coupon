@@ -20,16 +20,16 @@
 	.clear-btn {
 		font-size: 12px;
 		padding: 4px 12px;
-		border: 1px solid #e2e8f0;
+		border: 1px solid var(--ui-border);
 		border-radius: 6px;
 		background: #fff;
 		cursor: pointer;
-		color: #64748b;
+		color: var(--ui-text-muted);
 	}
 
 	.clear-btn:hover {
-		background: #fee2e2;
-		color: #dc2626;
-		border-color: #fca5a5;
+		background: var(--ui-danger-bg);
+		color: var(--ui-danger-text);
+		border-color: var(--ui-danger-border);
 	}
 </style>
