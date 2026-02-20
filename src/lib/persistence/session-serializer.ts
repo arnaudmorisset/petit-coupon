@@ -17,6 +17,7 @@ export class SessionSerializer {
 
 	serialize(themeId: string, coupons: readonly Coupon[]): SessionData {
 		return {
+			version: 1,
 			selectedThemeId: themeId,
 			coupons: coupons.map((c) => ({
 				id: c.id.value,

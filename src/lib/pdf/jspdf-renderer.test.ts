@@ -1,3 +1,4 @@
+import type { jsPDF } from "jspdf";
 import { describe, expect, it } from "vitest";
 import { Coupon } from "../domain/coupon";
 import { CouponDimensions } from "../domain/coupon-dimensions";
@@ -16,7 +17,7 @@ import {
 import { CouponAssetRenderer } from "./coupon-asset-renderer";
 import { FontRegistry } from "./font-registry";
 import { APP_FONT_REGISTRY } from "./fonts";
-import { JsPdfCouponRenderer } from "./jspdf-renderer";
+import { JsPdfCouponRenderer, RenderError } from "./jspdf-renderer";
 import { SvgPathRenderer } from "./svg-path-renderer";
 
 function defaultLayout(): LayoutEngine {
@@ -219,6 +220,56 @@ describe("JsPdfCouponRenderer", () => {
 
 		expect(blob).toBeInstanceOf(Blob);
 		expect(blob.size).toBeGreaterThan(0);
+	});
+});
+
+describe("JsPdfCouponRenderer error handling", () => {
+	it("wraps internal errors in RenderError", () => {
+		class ThrowingFontRegistry extends FontRegistry {
+			constructor() {
+				super([]);
+			}
+			override registerAll(_doc: jsPDF): void {
+				throw new Error("Font registration failed");
+			}
+		}
+
+		const renderer = new JsPdfCouponRenderer();
+		expect(() =>
+			renderer.render(
+				makeCoupons(1),
+				defaultLayout(),
+				DEFAULT_THEME,
+				new ThrowingFontRegistry(),
+			),
+		).toThrow(RenderError);
+	});
+
+	it("includes original error message in RenderError", () => {
+		class ThrowingFontRegistry extends FontRegistry {
+			constructor() {
+				super([]);
+			}
+			override registerAll(_doc: jsPDF): void {
+				throw new Error("Specific failure reason");
+			}
+		}
+
+		const renderer = new JsPdfCouponRenderer();
+		try {
+			renderer.render(
+				makeCoupons(1),
+				defaultLayout(),
+				DEFAULT_THEME,
+				new ThrowingFontRegistry(),
+			);
+			expect.unreachable("Should have thrown");
+		} catch (error) {
+			expect(error).toBeInstanceOf(RenderError);
+			expect((error as RenderError).message).toContain(
+				"Specific failure reason",
+			);
+		}
 	});
 });
 

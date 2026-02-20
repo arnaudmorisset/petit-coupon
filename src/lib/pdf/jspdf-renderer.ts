@@ -1,6 +1,7 @@
 import { jsPDF } from "jspdf";
 import type { Coupon } from "../domain/coupon";
 import { CouponTextLayout } from "../domain/coupon-layout";
+import type { GridPosition } from "../domain/grid-position";
 import type { LayoutEngine } from "../domain/layout-engine";
 import { TextScaler } from "../domain/text-scaler";
 import type { Theme } from "../domain/theme";
@@ -8,6 +9,19 @@ import type { CouponAssetRenderer } from "./coupon-asset-renderer";
 import type { FontRegistry } from "./font-registry";
 import type { CouponRenderer } from "./renderer";
 import { JsPdfTextMeasurer } from "./text-measurer";
+
+interface CouponPlacement {
+	readonly coupon: Coupon;
+	readonly position: GridPosition;
+}
+
+export class RenderError extends Error {
+	constructor(message: string, cause: unknown) {
+		super(message);
+		this.name = "RenderError";
+		this.cause = cause;
+	}
+}
 
 const CROP_MARK_LENGTH_MM = 3;
 const CROP_MARK_OFFSET_MM = 1;
@@ -29,6 +43,21 @@ export class JsPdfCouponRenderer implements CouponRenderer {
 		theme: Theme,
 		fontRegistry: FontRegistry,
 	): Blob {
+		try {
+			return this.generatePdf(coupons, layout, theme, fontRegistry);
+		} catch (error) {
+			const message =
+				error instanceof Error ? error.message : "Unknown render failure";
+			throw new RenderError(`PDF generation failed: ${message}`, error);
+		}
+	}
+
+	private generatePdf(
+		coupons: readonly Coupon[],
+		layout: LayoutEngine,
+		theme: Theme,
+		fontRegistry: FontRegistry,
+	): Blob {
 		const config = layout.config;
 		const doc = new jsPDF({
 			orientation: "portrait",
@@ -42,7 +71,7 @@ export class JsPdfCouponRenderer implements CouponRenderer {
 			return doc.output("blob");
 		}
 
-		const positions = layout.computePositions(coupons.length);
+		const placements = this.buildPlacements(coupons, layout);
 		const pageCount = layout.computePageCount(coupons.length);
 		const couponWidth = config.couponDimensions.widthMm;
 		const couponHeight = config.couponDimensions.heightMm;
@@ -70,14 +99,14 @@ export class JsPdfCouponRenderer implements CouponRenderer {
 				doc.addPage();
 			}
 
-			const pagePositions = positions.filter((p) => p.page === page);
-
-			for (const pos of pagePositions) {
+			for (const { coupon, position } of placements.filter(
+				(p) => p.position.page === page,
+			)) {
 				this.drawCoupon(
 					doc,
-					coupons[positions.indexOf(pos)],
-					pos.xMm,
-					pos.yMm,
+					coupon,
+					position.xMm,
+					position.yMm,
 					couponWidth,
 					couponHeight,
 					theme,
@@ -87,8 +116,8 @@ export class JsPdfCouponRenderer implements CouponRenderer {
 
 				this.drawCropMarks(
 					doc,
-					pos.xMm,
-					pos.yMm,
+					position.xMm,
+					position.yMm,
 					couponWidth,
 					couponHeight,
 					theme,
@@ -99,9 +128,23 @@ export class JsPdfCouponRenderer implements CouponRenderer {
 		return doc.output("blob");
 	}
 
+	private buildPlacements(
+		coupons: readonly Coupon[],
+		layout: LayoutEngine,
+	): readonly CouponPlacement[] {
+		const positions = layout.computePositions(coupons.length);
+		return coupons.map((coupon, i) => {
+			const position = positions[i];
+			if (position === undefined) {
+				throw new Error(`Missing position for coupon at index ${String(i)}`);
+			}
+			return { coupon, position };
+		});
+	}
+
 	private drawCoupon(
 		doc: jsPDF,
-		coupon: Coupon | undefined,
+		coupon: Coupon,
 		x: number,
 		y: number,
 		width: number,
@@ -110,10 +153,6 @@ export class JsPdfCouponRenderer implements CouponRenderer {
 		fontRegistry: FontRegistry,
 		couponLayout: CouponTextLayout,
 	): void {
-		if (!coupon) {
-			return;
-		}
-
 		// Background
 		doc.setFillColor(theme.backgroundColor);
 		doc.setDrawColor(theme.borderColor);

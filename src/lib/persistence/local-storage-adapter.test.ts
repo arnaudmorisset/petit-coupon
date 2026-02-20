@@ -4,6 +4,7 @@ import { LocalStorageAdapter } from "./local-storage-adapter";
 
 function validSession(): SessionData {
 	return {
+		version: 1,
 		selectedThemeId: "classic",
 		coupons: [
 			{ id: "1", title: "Birthday", text: "Happy Birthday!" },
@@ -72,6 +73,7 @@ describe("LocalStorageAdapter", () => {
 		adapter.save(validSession());
 
 		const newSession: SessionData = {
+			version: 1,
 			selectedThemeId: "romantic",
 			coupons: [{ id: "99", title: "New", text: "New coupon" }],
 		};
@@ -84,6 +86,7 @@ describe("LocalStorageAdapter", () => {
 	it("preserves title field in coupons", () => {
 		const adapter = new LocalStorageAdapter(storage);
 		const session: SessionData = {
+			version: 1,
 			selectedThemeId: "classic",
 			coupons: [{ id: "1", title: "My Title", text: "Body text" }],
 		};

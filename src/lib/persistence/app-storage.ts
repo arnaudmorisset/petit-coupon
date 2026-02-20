@@ -5,6 +5,7 @@ export interface SerializedCoupon {
 }
 
 export interface SessionData {
+	readonly version: number;
 	readonly selectedThemeId: string;
 	readonly coupons: readonly SerializedCoupon[];
 }

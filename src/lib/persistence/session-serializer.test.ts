@@ -32,6 +32,7 @@ describe("SessionSerializer", () => {
 		const serializer = new SessionSerializer(registry);
 
 		const result = serializer.deserialize({
+			version: 1,
 			selectedThemeId: "romantic",
 			coupons: [],
 		});
@@ -43,6 +44,7 @@ describe("SessionSerializer", () => {
 		const serializer = new SessionSerializer(registry);
 
 		const result = serializer.deserialize({
+			version: 1,
 			selectedThemeId: "nonexistent",
 			coupons: [],
 		});
@@ -54,6 +56,7 @@ describe("SessionSerializer", () => {
 		const serializer = new SessionSerializer(registry);
 
 		const result = serializer.deserialize({
+			version: 1,
 			selectedThemeId: "classic",
 			coupons: [{ id: "abc-123", title: "T", text: "Body" }],
 		});
@@ -66,6 +69,7 @@ describe("SessionSerializer", () => {
 		const serializer = new SessionSerializer(registry);
 
 		const result = serializer.deserialize({
+			version: 1,
 			selectedThemeId: "classic",
 			coupons: [
 				{ id: "1", title: "Valid", text: "OK" },
@@ -83,6 +87,7 @@ describe("SessionSerializer", () => {
 		const serializer = new SessionSerializer(registry);
 
 		const result = serializer.deserialize({
+			version: 1,
 			selectedThemeId: "classic",
 			coupons: [],
 		});
@@ -98,5 +103,50 @@ describe("SessionSerializer", () => {
 
 		expect(data.coupons[0]?.title).toBe("Special Title");
 		expect(data.coupons[0]?.text).toBe("Body");
+	});
+
+	it("includes version 1 in serialized output", () => {
+		const serializer = new SessionSerializer(registry);
+
+		const data = serializer.serialize("classic", []);
+
+		expect(data.version).toBe(1);
+	});
+
+	it("deserializes old format data without version field", () => {
+		const serializer = new SessionSerializer(registry);
+		const oldFormatData = {
+			selectedThemeId: "classic",
+			coupons: [{ id: "1", title: "T", text: "Body" }],
+		} as never;
+
+		const result = serializer.deserialize(oldFormatData);
+
+		expect(result.themeId).toBe("classic");
+		expect(result.coupons).toHaveLength(1);
+		expect(result.coupons[0]?.text).toBe("Body");
+	});
+
+	it("returns defaults for completely malformed data", () => {
+		const serializer = new SessionSerializer(registry);
+
+		const result = serializer.deserialize("not an object" as never);
+
+		expect(result.themeId).toBe(registry.getDefault().id);
+		expect(result.coupons).toHaveLength(0);
+	});
+
+	it("returns defaults when coupons field is not an array", () => {
+		const serializer = new SessionSerializer(registry);
+		const badData = {
+			version: 1,
+			selectedThemeId: "classic",
+			coupons: "not-an-array",
+		} as never;
+
+		const result = serializer.deserialize(badData);
+
+		expect(result.themeId).toBe(registry.getDefault().id);
+		expect(result.coupons).toHaveLength(0);
 	});
 });
