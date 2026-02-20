@@ -4,6 +4,7 @@ import { CouponTextLayout } from "../domain/coupon-layout";
 import type { LayoutEngine } from "../domain/layout-engine";
 import { TextScaler } from "../domain/text-scaler";
 import type { Theme } from "../domain/theme";
+import type { CouponAssetRenderer } from "./coupon-asset-renderer";
 import type { FontRegistry } from "./font-registry";
 import type { CouponRenderer } from "./renderer";
 import { JsPdfTextMeasurer } from "./text-measurer";
@@ -17,6 +18,11 @@ const LINE_HEIGHT_RATIO = 1.3;
 const PT_TO_MM = 25.4 / 72;
 
 export class JsPdfCouponRenderer implements CouponRenderer {
+	private readonly assetRenderer: CouponAssetRenderer | null;
+
+	constructor(assetRenderer?: CouponAssetRenderer) {
+		this.assetRenderer = assetRenderer ?? null;
+	}
 	render(
 		coupons: readonly Coupon[],
 		layout: LayoutEngine,
@@ -115,6 +121,16 @@ export class JsPdfCouponRenderer implements CouponRenderer {
 
 		this.drawBorder(doc, x, y, width, height, theme);
 
+		// Draw decorative assets (patterns, ornaments, illustrations)
+		if (this.assetRenderer !== null) {
+			this.assetRenderer.renderAssets(
+				doc,
+				theme.assets,
+				{ x, y, width, height },
+				theme,
+			);
+		}
+
 		// Compute text area
 		const textAreaWidth = width - 2 * theme.paddingMm;
 		const textAreaHeight = height - 2 * theme.paddingMm;
@@ -126,6 +142,7 @@ export class JsPdfCouponRenderer implements CouponRenderer {
 			innerHeightMm: textAreaHeight,
 			maxTitleFontSizePt: TITLE_FONT_SIZE_PT,
 			maxBodyFontSizePt: BODY_FONT_SIZE_PT,
+			illustration: theme.assets?.illustration ?? undefined,
 		});
 
 		const contentX = x + width / 2;

@@ -3,6 +3,9 @@
 	import type { PageData } from "../domain/sheet-preview-data";
 	import type { Theme } from "../domain/theme";
 	import type { PageFormat } from "../domain/page-format";
+	import SvgIllustration from "./SvgIllustration.svelte";
+	import SvgOrnament from "./SvgOrnament.svelte";
+	import SvgPattern from "./SvgPattern.svelte";
 
 	interface Props {
 		page: PageData;
@@ -40,6 +43,21 @@
 				style:--border-radius="{theme.borderRadiusMm}px"
 				style:--title-color={theme.titleColor}
 			>
+				{#if theme.assets?.pattern}
+					<SvgPattern pattern={theme.assets.pattern} color={theme.accentColor} id="sheet-{entry.coupon.id.value}" />
+				{/if}
+
+				{#if theme.assets?.cornerOrnament}
+					<SvgOrnament ornament={theme.assets.cornerOrnament} corner="tl" color={theme.accentColor} />
+					<SvgOrnament ornament={theme.assets.cornerOrnament} corner="tr" color={theme.accentColor} />
+					<SvgOrnament ornament={theme.assets.cornerOrnament} corner="bl" color={theme.accentColor} />
+					<SvgOrnament ornament={theme.assets.cornerOrnament} corner="br" color={theme.accentColor} />
+				{/if}
+
+				{#if theme.assets?.illustration}
+					<SvgIllustration illustration={theme.assets.illustration} color={theme.accentColor} />
+				{/if}
+
 				<div class="coupon-content">
 					{#if entry.coupon.title.length > 0}
 						<span class="coupon-title">{entry.coupon.title}</span>
@@ -99,6 +117,8 @@
 	}
 
 	.coupon-content {
+		position: relative;
+		z-index: 1;
 		display: flex;
 		flex-direction: column;
 		gap: 1px;

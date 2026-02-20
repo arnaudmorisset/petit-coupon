@@ -1,5 +1,8 @@
 <script lang="ts">
 	import type { Theme } from "../domain/theme";
+	import SvgIllustration from "./SvgIllustration.svelte";
+	import SvgOrnament from "./SvgOrnament.svelte";
+	import SvgPattern from "./SvgPattern.svelte";
 
 	interface Props {
 		theme: Theme;
@@ -29,6 +32,21 @@
 	style:--preview-title-color={theme.titleColor}
 >
 	<div class="preview">
+		{#if theme.assets?.pattern}
+			<SvgPattern pattern={theme.assets.pattern} color={theme.accentColor} id="theme-{theme.id}" />
+		{/if}
+
+		{#if theme.assets?.cornerOrnament}
+			<SvgOrnament ornament={theme.assets.cornerOrnament} corner="tl" color={theme.accentColor} />
+			<SvgOrnament ornament={theme.assets.cornerOrnament} corner="tr" color={theme.accentColor} />
+			<SvgOrnament ornament={theme.assets.cornerOrnament} corner="bl" color={theme.accentColor} />
+			<SvgOrnament ornament={theme.assets.cornerOrnament} corner="br" color={theme.accentColor} />
+		{/if}
+
+		{#if theme.assets?.illustration}
+			<SvgIllustration illustration={theme.assets.illustration} color={theme.accentColor} />
+		{/if}
+
 		<span class="preview-text">Abc</span>
 	</div>
 	<span class="theme-name">{theme.name}</span>
@@ -59,6 +77,7 @@
 	}
 
 	.preview {
+		position: relative;
 		width: 80px;
 		height: 50px;
 		display: flex;
@@ -69,9 +88,12 @@
 		border-width: var(--preview-border-width);
 		border-style: var(--preview-border-style);
 		border-radius: var(--preview-border-radius);
+		overflow: hidden;
 	}
 
 	.preview-text {
+		position: relative;
+		z-index: 1;
 		font-size: 16px;
 		font-weight: 600;
 		color: var(--preview-title-color);

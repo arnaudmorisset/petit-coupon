@@ -2,6 +2,9 @@
 	import type { Coupon } from "../domain/coupon";
 	import type { CouponId } from "../domain/coupon-id";
 	import type { Theme } from "../domain/theme";
+	import SvgIllustration from "./SvgIllustration.svelte";
+	import SvgOrnament from "./SvgOrnament.svelte";
+	import SvgPattern from "./SvgPattern.svelte";
 
 	interface Props {
 		coupon: Coupon;
@@ -63,6 +66,21 @@
 	style:--title-color={theme.titleColor}
 	style:--text-color={theme.textColor}
 >
+	{#if theme.assets?.pattern}
+		<SvgPattern pattern={theme.assets.pattern} color={theme.accentColor} id="preview-{coupon.id.value}" />
+	{/if}
+
+	{#if theme.assets?.cornerOrnament}
+		<SvgOrnament ornament={theme.assets.cornerOrnament} corner="tl" color={theme.accentColor} />
+		<SvgOrnament ornament={theme.assets.cornerOrnament} corner="tr" color={theme.accentColor} />
+		<SvgOrnament ornament={theme.assets.cornerOrnament} corner="bl" color={theme.accentColor} />
+		<SvgOrnament ornament={theme.assets.cornerOrnament} corner="br" color={theme.accentColor} />
+	{/if}
+
+	{#if theme.assets?.illustration}
+		<SvgIllustration illustration={theme.assets.illustration} color={theme.accentColor} />
+	{/if}
+
 	{#if editing}
 		<div class="coupon-edit-fields">
 			<input
@@ -103,6 +121,7 @@
 
 <style>
 	.coupon-preview {
+		position: relative;
 		aspect-ratio: 90 / 55;
 		display: flex;
 		align-items: center;
@@ -121,6 +140,8 @@
 
 	.coupon-text-btn {
 		all: unset;
+		position: relative;
+		z-index: 1;
 		cursor: pointer;
 		width: 100%;
 		height: 100%;
@@ -156,6 +177,8 @@
 	}
 
 	.coupon-edit-fields {
+		position: relative;
+		z-index: 1;
 		width: 100%;
 		height: 100%;
 		display: flex;

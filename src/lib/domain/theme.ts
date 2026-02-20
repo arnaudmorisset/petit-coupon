@@ -1,6 +1,8 @@
 export type ThemeCategory = "romantic" | "friendly" | "playful" | "minimal";
 export type BorderStyle = "solid" | "dashed" | "double";
 
+import type { ThemeAssets } from "./theme-assets";
+
 export interface Theme {
 	readonly id: string;
 	readonly name: string;
@@ -17,6 +19,7 @@ export interface Theme {
 	readonly borderRadiusMm: number;
 	readonly borderStyle: BorderStyle;
 	readonly paddingMm: number;
+	readonly assets?: ThemeAssets;
 }
 
 export const DEFAULT_THEME: Theme = {

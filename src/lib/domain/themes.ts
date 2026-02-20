@@ -1,3 +1,19 @@
+import {
+	MOON_ILLUSTRATION,
+	ROSE_ILLUSTRATION,
+	SUN_ILLUSTRATION,
+} from "../assets/illustrations";
+import {
+	FLOURISH_ORNAMENT,
+	GEOMETRIC_ORNAMENT,
+	LEAF_ORNAMENT,
+} from "../assets/ornaments";
+import {
+	DOTS_PATTERN,
+	HEARTS_PATTERN,
+	STARS_PATTERN,
+	WAVES_PATTERN,
+} from "../assets/patterns";
 import type { Theme } from "./theme";
 import { ThemeRegistry } from "./theme-registry";
 
@@ -17,6 +33,11 @@ export const CLASSIC_THEME: Theme = {
 	borderRadiusMm: 2,
 	borderStyle: "solid",
 	paddingMm: 4,
+	assets: {
+		pattern: DOTS_PATTERN,
+		cornerOrnament: null,
+		illustration: null,
+	},
 };
 
 export const ROMANTIC_THEME: Theme = {
@@ -35,6 +56,11 @@ export const ROMANTIC_THEME: Theme = {
 	borderRadiusMm: 4,
 	borderStyle: "dashed",
 	paddingMm: 5,
+	assets: {
+		pattern: HEARTS_PATTERN,
+		cornerOrnament: FLOURISH_ORNAMENT,
+		illustration: ROSE_ILLUSTRATION,
+	},
 };
 
 export const SUNSHINE_THEME: Theme = {
@@ -53,6 +79,11 @@ export const SUNSHINE_THEME: Theme = {
 	borderRadiusMm: 6,
 	borderStyle: "solid",
 	paddingMm: 5,
+	assets: {
+		pattern: WAVES_PATTERN,
+		cornerOrnament: LEAF_ORNAMENT,
+		illustration: SUN_ILLUSTRATION,
+	},
 };
 
 export const MIDNIGHT_THEME: Theme = {
@@ -71,6 +102,11 @@ export const MIDNIGHT_THEME: Theme = {
 	borderRadiusMm: 1,
 	borderStyle: "double",
 	paddingMm: 4,
+	assets: {
+		pattern: STARS_PATTERN,
+		cornerOrnament: GEOMETRIC_ORNAMENT,
+		illustration: MOON_ILLUSTRATION,
+	},
 };
 
 export const ALL_THEMES: readonly Theme[] = [

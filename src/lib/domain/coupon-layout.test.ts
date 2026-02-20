@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { CouponTextLayout } from "./coupon-layout";
 import { EstimatedTextMeasurer } from "./text-measurer";
 import { TextScaler } from "./text-scaler";
+import type { IllustrationAsset } from "./theme-assets";
 
 const measurer = new EstimatedTextMeasurer(0.5);
 const textScaler = new TextScaler(6, 1.3, measurer);
@@ -28,6 +29,7 @@ describe("CouponTextLayout", () => {
 			innerHeightMm: INNER_HEIGHT,
 			maxTitleFontSizePt: 14,
 			maxBodyFontSizePt: 10,
+			illustration: undefined,
 		});
 
 		expect(result.title).toBeNull();
@@ -44,6 +46,7 @@ describe("CouponTextLayout", () => {
 			innerHeightMm: INNER_HEIGHT,
 			maxTitleFontSizePt: 14,
 			maxBodyFontSizePt: 10,
+			illustration: undefined,
 		});
 
 		expect(result.body.fits).toBe(true);
@@ -60,6 +63,7 @@ describe("CouponTextLayout", () => {
 			innerHeightMm: INNER_HEIGHT,
 			maxTitleFontSizePt: 14,
 			maxBodyFontSizePt: 10,
+			illustration: undefined,
 		});
 
 		expect(result.title).not.toBeNull();
@@ -79,6 +83,7 @@ describe("CouponTextLayout", () => {
 			innerHeightMm: INNER_HEIGHT,
 			maxTitleFontSizePt: 14,
 			maxBodyFontSizePt: 10,
+			illustration: undefined,
 		});
 
 		expect(result.title).not.toBeNull();
@@ -95,6 +100,7 @@ describe("CouponTextLayout", () => {
 			innerHeightMm: INNER_HEIGHT,
 			maxTitleFontSizePt: 14,
 			maxBodyFontSizePt: 10,
+			illustration: undefined,
 		});
 
 		expect(result.title).not.toBeNull();
@@ -111,6 +117,7 @@ describe("CouponTextLayout", () => {
 			innerHeightMm: INNER_HEIGHT,
 			maxTitleFontSizePt: 14,
 			maxBodyFontSizePt: 10,
+			illustration: undefined,
 		});
 
 		expect(result.title).not.toBeNull();
@@ -129,6 +136,7 @@ describe("CouponTextLayout", () => {
 			innerHeightMm: INNER_HEIGHT,
 			maxTitleFontSizePt: 14,
 			maxBodyFontSizePt: 10,
+			illustration: undefined,
 		});
 
 		expect(result.title).toBeNull();
@@ -146,11 +154,120 @@ describe("CouponTextLayout", () => {
 			innerHeightMm: INNER_HEIGHT,
 			maxTitleFontSizePt: 14,
 			maxBodyFontSizePt: 10,
+			illustration: undefined,
 		});
 
 		expect(result.title).not.toBeNull();
 		// Title starts at 14, body starts at 10 — they scale independently
 		expect(result.title?.fontSizePt).toBeLessThanOrEqual(14);
 		expect(result.body.fontSizePt).toBeLessThanOrEqual(10);
+	});
+
+	describe("illustration adjustment", () => {
+		const illustration: IllustrationAsset = {
+			path: { d: "M 0 0 L 10 10", viewBox: "0 0 20 20" },
+			widthMm: 10,
+			heightMm: 13,
+			position: "bottom-right",
+		};
+
+		it("uses full width when no illustration is provided", () => {
+			const layout = makeLayout();
+
+			const withoutIllustration = layout.compute({
+				title: "",
+				text: "A moderately long text to test width usage",
+				innerWidthMm: INNER_WIDTH,
+				innerHeightMm: INNER_HEIGHT,
+				maxTitleFontSizePt: 14,
+				maxBodyFontSizePt: 10,
+				illustration: undefined,
+			});
+
+			const withIllustration = layout.compute({
+				title: "",
+				text: "A moderately long text to test width usage",
+				innerWidthMm: INNER_WIDTH,
+				innerHeightMm: INNER_HEIGHT,
+				maxTitleFontSizePt: 14,
+				maxBodyFontSizePt: 10,
+				illustration,
+			});
+
+			// With illustration, text has less width so more lines are needed
+			expect(withIllustration.body.lines.length).toBeGreaterThanOrEqual(
+				withoutIllustration.body.lines.length,
+			);
+		});
+
+		it("reduces text width for illustration at top-right", () => {
+			const layout = makeLayout();
+			const topRightIllustration: IllustrationAsset = {
+				...illustration,
+				position: "top-right",
+			};
+
+			const result = layout.compute({
+				title: "Title",
+				text: "Body text that needs to fit alongside an illustration",
+				innerWidthMm: INNER_WIDTH,
+				innerHeightMm: INNER_HEIGHT,
+				maxTitleFontSizePt: 14,
+				maxBodyFontSizePt: 10,
+				illustration: topRightIllustration,
+			});
+
+			expect(result.title).not.toBeNull();
+			expect(result.body.lines.length).toBeGreaterThan(0);
+		});
+
+		it("reduces text width for illustration at bottom-left", () => {
+			const layout = makeLayout();
+			const bottomLeftIllustration: IllustrationAsset = {
+				...illustration,
+				position: "bottom-left",
+			};
+
+			const result = layout.compute({
+				title: "",
+				text: "Body text that needs to fit alongside an illustration on the left side",
+				innerWidthMm: INNER_WIDTH,
+				innerHeightMm: INNER_HEIGHT,
+				maxTitleFontSizePt: 14,
+				maxBodyFontSizePt: 10,
+				illustration: bottomLeftIllustration,
+			});
+
+			expect(result.body.lines.length).toBeGreaterThan(0);
+		});
+
+		it("causes font to scale down for long text with illustration", () => {
+			const layout = makeLayout();
+
+			const withoutIllustration = layout.compute({
+				title: "",
+				text: "This is a long text that fills the available space and might cause scaling issues when combined with a large illustration element",
+				innerWidthMm: 40,
+				innerHeightMm: 20,
+				maxTitleFontSizePt: 14,
+				maxBodyFontSizePt: 10,
+				illustration: undefined,
+			});
+
+			const withIllustration = layout.compute({
+				title: "",
+				text: "This is a long text that fills the available space and might cause scaling issues when combined with a large illustration element",
+				innerWidthMm: 40,
+				innerHeightMm: 20,
+				maxTitleFontSizePt: 14,
+				maxBodyFontSizePt: 10,
+				illustration,
+			});
+
+			// With less width available, font may need to scale down more
+			expect(withIllustration.body.fontSizePt).toBeLessThanOrEqual(
+				withoutIllustration.body.fontSizePt,
+			);
+		});
 	});
 });

@@ -1,7 +1,9 @@
 import type { TextScaler } from "./text-scaler";
+import type { IllustrationAsset } from "./theme-assets";
 
 const PT_TO_MM = 25.4 / 72;
 const TITLE_BODY_GAP_MM = 2;
+const ILLUSTRATION_GAP_MM = 2;
 
 export interface CouponTextLayoutParams {
 	readonly title: string;
@@ -10,6 +12,7 @@ export interface CouponTextLayoutParams {
 	readonly innerHeightMm: number;
 	readonly maxTitleFontSizePt: number;
 	readonly maxBodyFontSizePt: number;
+	readonly illustration: IllustrationAsset | undefined;
 }
 
 export interface TextBlockLayout {
@@ -40,10 +43,25 @@ export class CouponTextLayout {
 	}
 
 	compute(params: CouponTextLayoutParams): CouponTextLayoutResult {
-		if (params.title.trim().length === 0) {
-			return this.computeBodyOnly(params);
+		const adjustedParams = this.adjustForIllustration(params);
+		if (adjustedParams.title.trim().length === 0) {
+			return this.computeBodyOnly(adjustedParams);
 		}
-		return this.computeTitleAndBody(params);
+		return this.computeTitleAndBody(adjustedParams);
+	}
+
+	private adjustForIllustration(
+		params: CouponTextLayoutParams,
+	): CouponTextLayoutParams {
+		if (params.illustration === undefined) {
+			return params;
+		}
+		const illustrationWidthReduction =
+			params.illustration.widthMm + ILLUSTRATION_GAP_MM;
+		return {
+			...params,
+			innerWidthMm: params.innerWidthMm - illustrationWidthReduction,
+		};
 	}
 
 	private computeBodyOnly(

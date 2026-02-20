@@ -5,9 +5,11 @@
 	import { Margins } from "../domain/margins";
 	import { PageFormat } from "../domain/page-format";
 	import type { Theme } from "../domain/theme";
+	import { CouponAssetRenderer } from "../pdf/coupon-asset-renderer";
 	import { DownloadService } from "../pdf/download-service";
 	import { APP_FONT_REGISTRY } from "../pdf/fonts";
 	import { JsPdfCouponRenderer } from "../pdf/jspdf-renderer";
+	import { SvgPathRenderer } from "../pdf/svg-path-renderer";
 	import type { CouponStore } from "../stores/coupon-store.svelte";
 
 	interface Props {
@@ -17,7 +19,8 @@
 
 	const { store, theme }: Props = $props();
 
-	const renderer = new JsPdfCouponRenderer();
+	const assetRenderer = new CouponAssetRenderer(new SvgPathRenderer());
+	const renderer = new JsPdfCouponRenderer(assetRenderer);
 	const downloadService = new DownloadService();
 	const layout = new LayoutEngine(
 		new LayoutConfig(

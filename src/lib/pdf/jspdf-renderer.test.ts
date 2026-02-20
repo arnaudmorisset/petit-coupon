@@ -8,13 +8,16 @@ import { Margins } from "../domain/margins";
 import { PageFormat } from "../domain/page-format";
 import { DEFAULT_THEME } from "../domain/theme";
 import {
+	CLASSIC_THEME,
 	MIDNIGHT_THEME,
 	ROMANTIC_THEME,
 	SUNSHINE_THEME,
 } from "../domain/themes";
+import { CouponAssetRenderer } from "./coupon-asset-renderer";
 import { FontRegistry } from "./font-registry";
 import { APP_FONT_REGISTRY } from "./fonts";
 import { JsPdfCouponRenderer } from "./jspdf-renderer";
+import { SvgPathRenderer } from "./svg-path-renderer";
 
 function defaultLayout(): LayoutEngine {
 	return new LayoutEngine(
@@ -212,6 +215,68 @@ describe("JsPdfCouponRenderer", () => {
 			defaultLayout(),
 			DEFAULT_THEME,
 			emptyFontRegistry,
+		);
+
+		expect(blob).toBeInstanceOf(Blob);
+		expect(blob.size).toBeGreaterThan(0);
+	});
+});
+
+describe("JsPdfCouponRenderer with asset renderer", () => {
+	const assetRenderer = new CouponAssetRenderer(new SvgPathRenderer());
+
+	it("renders classic theme with assets", () => {
+		const renderer = new JsPdfCouponRenderer(assetRenderer);
+		const blob = renderer.render(
+			makeCoupons(2),
+			defaultLayout(),
+			CLASSIC_THEME,
+			APP_FONT_REGISTRY,
+		);
+
+		expect(blob).toBeInstanceOf(Blob);
+		expect(blob.size).toBeGreaterThan(0);
+	});
+
+	it("renders romantic theme with full assets", () => {
+		const renderer = new JsPdfCouponRenderer(assetRenderer);
+		const blob = renderer.render(
+			makeCoupons(2),
+			defaultLayout(),
+			ROMANTIC_THEME,
+			APP_FONT_REGISTRY,
+		);
+
+		expect(blob).toBeInstanceOf(Blob);
+		expect(blob.size).toBeGreaterThan(0);
+	});
+
+	it("renders all 4 themes with assets without error", () => {
+		const renderer = new JsPdfCouponRenderer(assetRenderer);
+		for (const theme of [
+			CLASSIC_THEME,
+			ROMANTIC_THEME,
+			SUNSHINE_THEME,
+			MIDNIGHT_THEME,
+		]) {
+			const blob = renderer.render(
+				makeCoupons(2),
+				defaultLayout(),
+				theme,
+				APP_FONT_REGISTRY,
+			);
+			expect(blob).toBeInstanceOf(Blob);
+			expect(blob.size).toBeGreaterThan(0);
+		}
+	});
+
+	it("renders multi-page with assets", () => {
+		const renderer = new JsPdfCouponRenderer(assetRenderer);
+		const blob = renderer.render(
+			makeCoupons(12),
+			defaultLayout(),
+			ROMANTIC_THEME,
+			APP_FONT_REGISTRY,
 		);
 
 		expect(blob).toBeInstanceOf(Blob);

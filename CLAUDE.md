@@ -37,20 +37,30 @@ Pure TypeScript classes — zero framework dependency. Each concept is its own f
 - `CouponCollection` — manages the coupon list. `add(coupon: Coupon)`, `edit(id, updates: Partial<Coupon>)`, `remove`, `move`, `reorder`. No ID generation — caller provides complete `Coupon` instances
 - `TextMeasurer` interface + `EstimatedTextMeasurer` — measures text width in mm (char-width ratio based)
 - `TextScaler` — computes optimal font size to fit text in a bounding box with word wrapping and force-break
-- `CouponTextLayout` — computes title + body text zones for PDF rendering. Uses `TextScaler` to auto-scale each zone independently. Returns `TextBlockLayout` (lines, fontSize, offsetY) for title (nullable) and body
+- `CouponTextLayout` — computes title + body text zones for PDF rendering. Uses `TextScaler` to auto-scale each zone independently. Returns `TextBlockLayout` (lines, fontSize, offsetY) for title (nullable) and body. Accepts `illustration` param to reduce text width when an illustration occupies a corner
+- `ThemeAssets` types (`theme-assets.ts`) — `SvgPathData`, `PatternAsset`, `OrnamentAsset`, `IllustrationAsset`, `ThemeAssets`. Each theme optionally carries `assets?: ThemeAssets` for decorative SVG elements
 - `SheetPreviewData` — groups coupons and grid positions by page number for preview rendering
 - `Theme` interface + `DEFAULT_THEME` constant — extended with `ThemeCategory`, `BorderStyle`, title font, accent color, padding, and border style
 - `ThemeRegistry` — holds all themes, lookups by ID or category, validates uniqueness
-- `themes.ts` — 4 theme definitions (`classic`, `romantic`, `sunshine`, `midnight`) + `ALL_THEMES` array + `THEME_REGISTRY` instance
+- `themes.ts` — 4 theme definitions (`classic`, `romantic`, `sunshine`, `midnight`) + `ALL_THEMES` array + `THEME_REGISTRY` instance. Each theme wires in its decorative assets (patterns, ornaments, illustrations)
+
+### Asset Library (`src/lib/assets/`)
+SVG path data constants for theme decorations. All designs use normalized viewBoxes, scaled at render time:
+- `patterns.ts` — `DOTS_PATTERN`, `HEARTS_PATTERN`, `WAVES_PATTERN`, `STARS_PATTERN`
+- `ornaments.ts` — `FLOURISH_ORNAMENT`, `LEAF_ORNAMENT`, `GEOMETRIC_ORNAMENT`
+- `illustrations.ts` — `ROSE_ILLUSTRATION`, `SUN_ILLUSTRATION`, `MOON_ILLUSTRATION`
 
 ### PDF Layer (`src/lib/pdf/`)
 - `CouponRenderer` interface → `JsPdfCouponRenderer` implementation
+- `PdfDrawingContext` — narrow interface over jsPDF's drawing methods (`moveTo`, `lineTo`, `curveTo`, `fill`, etc.). Enables test mocks to satisfy the type structurally without `as` casts
+- `SvgPathRenderer` — translates SVG path `d` strings into `PdfDrawingContext` calls. Supports M/m, L/l, C/c, Q/q (→ cubic), A/a, Z/z commands. Handles tiled patterns with GState opacity and clipping
+- `CouponAssetRenderer` — orchestrates drawing all theme assets for a coupon (pattern → corner ornaments → illustration). Depends on `PathRenderer` interface (implemented by `SvgPathRenderer`)
 - `FontRegistry` — registers custom TTF fonts into jsPDF (`FontSource` interface for base64-encoded TTFs)
 - `fonts/` — embedded TTF font files (Dancing Script, Nunito, Space Grotesk) + `font-data.ts` base64 exports
 - `fonts.ts` — pre-built `APP_FONT_REGISTRY` instance with all custom fonts
 - `DownloadService` — triggers browser file download from a Blob
 - `JsPdfTextMeasurer` — wraps jsPDF's `getStringUnitWidth()` for precise text measurement during PDF rendering
-- `JsPdfCouponRenderer` supports solid/dashed/double border styles, title + body fonts, padding, accent-colored crop marks, and auto-scaled text via `CouponTextLayout` (which wraps `TextScaler`)
+- `JsPdfCouponRenderer` supports solid/dashed/double border styles, title + body fonts, padding, accent-colored crop marks, auto-scaled text via `CouponTextLayout`, and decorative assets via `CouponAssetRenderer`
 
 ### Persistence Layer (`src/lib/persistence/`)
 - `AppStorage` interface + `SessionData`/`SerializedCoupon` types — storage contract for session persistence
@@ -74,7 +84,9 @@ Thin Svelte 5 components. Components receive stores/data via props. No business 
 - `SheetPreview` — WYSIWYG multi-page A4 preview using `LayoutEngine` and `SheetPreviewData`
 - `SheetPage` — renders one A4 page with absolutely-positioned coupon cells (percentage-based coordinates), shows title + body
 - `ClearButton` — "Start fresh" button with browser `confirm()` dialog, calls `PersistenceManager.clearSession()`
-- `DownloadButton`, `ThemePicker`, `ThemePreviewCard` — unchanged from v0.2
+- `DownloadButton` — creates `CouponAssetRenderer(new SvgPathRenderer())` and passes it to `JsPdfCouponRenderer`
+- `ThemePicker`, `ThemePreviewCard` — theme selection UI; preview cards show decorative SVG assets
+- `SvgPattern`, `SvgOrnament`, `SvgIllustration` — CSS preview components rendering theme assets as inline SVGs (positioned absolutely, pointer-events none). Used in `CouponPreview`, `SheetPage`, and `ThemePreviewCard`
 - Theme-dependent styling uses CSS custom properties (`style:--var-name`) set on elements, referenced in `<style>` blocks — not inline `style:property` attributes.
 - Responsive breakpoint at 640px (mobile below, desktop above)
 
