@@ -1,8 +1,5 @@
 <script lang="ts">
 	import type { Theme } from "../domain/theme";
-	import SvgIllustration from "./SvgIllustration.svelte";
-	import SvgOrnament from "./SvgOrnament.svelte";
-	import { borderStyleToCss } from "../domain/border-style";
 	import SvgPattern from "./SvgPattern.svelte";
 
 	interface Props {
@@ -22,32 +19,18 @@
 	aria-label="Select {theme.name} theme"
 	aria-pressed={isSelected}
 	style:--preview-bg={theme.backgroundColor}
+	style:--preview-accent={theme.accentColor}
+	style:--preview-text-color={theme.textColor}
 	style:--preview-border-color={theme.borderColor}
-	style:--preview-border-width="{Math.max(1, theme.borderWidthMm * 2)}px"
-	style:--preview-border-style={borderStyleToCss(theme.borderStyle)}
-	style:--preview-border-radius="{theme.borderRadiusMm * 1.5}px"
-	style:--preview-title-color={theme.titleColor}
 >
-	<div class="preview">
+	<div class="theme-card-preview">
 		{#if theme.assets?.pattern}
 			<SvgPattern pattern={theme.assets.pattern} color={theme.accentColor} id="theme-{theme.id}" />
 		{/if}
 
-		{#if theme.assets?.cornerOrnament}
-			<SvgOrnament ornament={theme.assets.cornerOrnament} corner="tl" color={theme.accentColor} />
-			<SvgOrnament ornament={theme.assets.cornerOrnament} corner="tr" color={theme.accentColor} />
-			<SvgOrnament ornament={theme.assets.cornerOrnament} corner="bl" color={theme.accentColor} />
-			<SvgOrnament ornament={theme.assets.cornerOrnament} corner="br" color={theme.accentColor} />
-		{/if}
-
-		{#if theme.assets?.illustration}
-			<SvgIllustration illustration={theme.assets.illustration} color={theme.accentColor} />
-		{/if}
-
-		<span class="preview-text">Abc</span>
+		<span class="theme-card-sample">Abc</span>
 	</div>
-	<span class="theme-name">{theme.name}</span>
-	<span class="theme-desc">{theme.description}</span>
+	<span class="theme-card-desc">{theme.description}</span>
 </button>
 
 <style>
@@ -55,55 +38,49 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		gap: 6px;
-		padding: 10px;
-		border: 2px solid transparent;
-		border-radius: 8px;
-		background: none;
 		cursor: pointer;
-		transition: border-color 0.15s;
-		min-width: 100px;
+		background: none;
+		border: none;
+		padding: 0;
+		font-family: inherit;
 	}
 
-	.theme-card:hover {
-		border-color: var(--ui-border-hover);
-	}
-
-	.theme-card.selected {
-		border-color: var(--ui-primary);
-	}
-
-	.preview {
+	.theme-card-preview {
+		width: 100%;
+		aspect-ratio: 1.6;
+		background-color: var(--preview-bg);
+		border: 2px solid var(--ui-card-border);
+		border-radius: 10px;
+		padding: 16px 8px 10px;
+		overflow: hidden;
 		position: relative;
-		width: 80px;
-		height: 50px;
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background-color: var(--preview-bg);
-		border-color: var(--preview-border-color);
-		border-width: var(--preview-border-width);
-		border-style: var(--preview-border-style);
-		border-radius: var(--preview-border-radius);
-		overflow: hidden;
+		transition: border-color 0.15s ease, box-shadow 0.15s ease;
+		box-sizing: border-box;
 	}
 
-	.preview-text {
+	.theme-card.selected .theme-card-preview {
+		border: 2.5px solid var(--preview-border-color);
+		box-shadow: 0 0 0 3px color-mix(in srgb, var(--preview-border-color) 12%, transparent);
+	}
+
+	.theme-card:hover:not(.selected) .theme-card-preview {
+		border-color: var(--ui-border-hover);
+	}
+
+	.theme-card-sample {
 		position: relative;
 		z-index: 1;
 		font-size: 16px;
-		font-weight: 600;
-		color: var(--preview-title-color);
+		font-weight: 700;
+		color: var(--preview-text-color);
 	}
 
-	.theme-name {
-		font-size: 13px;
-		font-weight: 600;
-		color: var(--ui-text-heading);
-	}
-
-	.theme-desc {
-		font-size: 11px;
-		color: var(--ui-text-muted);
+	.theme-card-desc {
+		font-size: 10px;
+		margin-top: 6px;
+		color: color-mix(in srgb, var(--preview-text-color) 60%, transparent);
 	}
 </style>
