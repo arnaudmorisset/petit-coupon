@@ -1,5 +1,10 @@
 <script lang="ts">
-  import AppStepper from './lib/components/AppStepper.svelte'
+  import ClearButton from './lib/components/ClearButton.svelte'
+  import CouponForm from './lib/components/CouponForm.svelte'
+  import CouponList from './lib/components/CouponList.svelte'
+  import DownloadButton from './lib/components/DownloadButton.svelte'
+  import SheetPreview from './lib/components/SheetPreview.svelte'
+  import ThemePicker from './lib/components/ThemePicker.svelte'
   import { UuidGenerator } from './lib/domain/id-generator'
   import { THEME_REGISTRY } from './lib/domain/themes'
   import { LocalStorageAdapter } from './lib/persistence/local-storage-adapter'
@@ -29,5 +34,10 @@
 
 <main>
   <h1>Petit Coupon</h1>
-  <AppStepper />
+  <ThemePicker />
+  <CouponForm />
+  <CouponList />
+  <SheetPreview />
+  <DownloadButton />
+  <ClearButton />
 </main>

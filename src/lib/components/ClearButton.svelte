@@ -1,12 +1,11 @@
 <script lang="ts">
 	import { AppContext } from "../stores/context";
 
-	const { persistenceManager, stepperStore } = AppContext.current();
+	const { persistenceManager } = AppContext.current();
 
 	function handleClick(): void {
 		if (confirm("Start fresh? This will remove all coupons and reset the theme.")) {
 			persistenceManager.clearSession();
-			stepperStore.goTo(1);
 		}
 	}
 </script>
