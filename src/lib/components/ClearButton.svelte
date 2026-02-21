@@ -18,11 +18,12 @@
 	.clear-link {
 		all: unset;
 		font-size: 13px;
-		color: inherit;
-		opacity: 0.6;
+		color: var(--ui-text-muted);
 		cursor: pointer;
 		text-decoration: underline;
 		text-underline-offset: 2px;
+		text-align: center;
+		display: block;
 	}
 
 	.clear-link:hover {

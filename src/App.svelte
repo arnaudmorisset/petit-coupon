@@ -32,12 +32,65 @@
   ctx.provide()
 </script>
 
-<main>
+<header>
   <h1>Petit Coupon</h1>
-  <ThemePicker />
-  <CouponForm />
-  <CouponList />
-  <SheetPreview />
-  <DownloadButton />
-  <ClearButton />
-</main>
+</header>
+
+<div class="layout">
+  <div class="workspace">
+    <ThemePicker />
+    <CouponForm />
+    <CouponList />
+  </div>
+
+  <div class="sidebar">
+    <SheetPreview />
+    <DownloadButton />
+    {#if !couponStore.isEmpty}
+      <ClearButton />
+    {/if}
+  </div>
+</div>
+
+<style>
+  header {
+    text-align: center;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  .layout {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 20px 24px 60px;
+    display: grid;
+    grid-template-columns: 1fr 350px;
+    gap: 32px;
+    align-items: start;
+  }
+
+  .workspace {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .sidebar {
+    position: sticky;
+    top: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  @media (max-width: 768px) {
+    .layout {
+      grid-template-columns: 1fr;
+    }
+
+    .sidebar {
+      position: static;
+    }
+  }
+</style>
