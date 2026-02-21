@@ -29,6 +29,11 @@
   --ui-text-heading: #1e293b;
   --ui-bg-subtle: #f8fafc;
   --ui-bg-hover: #f1f5f9;
+  --ui-card-bg: #ffffff;
+  --ui-card-border: #ebebeb;
+  --ui-label-text: #444444;
+  --ui-label-suffix: #aaaaaa;
+  --ui-page-bg: #fafaf8;
 }
 
 a {
@@ -43,6 +48,7 @@ a:hover {
 body {
   margin: 0;
   min-width: 320px;
+  background-color: var(--ui-page-bg);
 }
 
 h1 {
@@ -81,7 +87,7 @@ button:focus-visible {
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
-    background-color: #ffffff;
+    background-color: var(--ui-page-bg);
   }
   a:hover {
     color: #747bff;

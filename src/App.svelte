@@ -3,6 +3,7 @@
   import CouponForm from './lib/components/CouponForm.svelte'
   import CouponList from './lib/components/CouponList.svelte'
   import DownloadButton from './lib/components/DownloadButton.svelte'
+  import Section from './lib/components/Section.svelte'
   import SheetPreview from './lib/components/SheetPreview.svelte'
   import ThemePicker from './lib/components/ThemePicker.svelte'
   import { UuidGenerator } from './lib/domain/id-generator'
@@ -38,13 +39,23 @@
 
 <div class="layout">
   <div class="workspace">
-    <ThemePicker />
-    <CouponForm />
-    <CouponList />
+    <Section label="Choose a Theme">
+      <ThemePicker />
+    </Section>
+    <Section label="Add a Coupon">
+      <CouponForm />
+    </Section>
+    {#if !couponStore.isEmpty}
+      <Section label="Your Coupons" suffix="({couponStore.count})">
+        <CouponList />
+      </Section>
+    {/if}
   </div>
 
   <div class="sidebar">
-    <SheetPreview />
+    <Section label="Preview">
+      <SheetPreview />
+    </Section>
     <DownloadButton />
     {#if !couponStore.isEmpty}
       <ClearButton />
