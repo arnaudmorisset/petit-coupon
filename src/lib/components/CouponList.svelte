@@ -26,27 +26,18 @@
 {#if store.isEmpty}
 	<p class="empty-message">No coupons yet. Add one above!</p>
 {:else}
-	<ul class="coupon-list">
+	<ul class="coupon-grid">
 		{#each store.coupons as coupon, index (coupon.id.value)}
-			<li class="coupon-item">
-				<div class="reorder-controls">
-					<button
-						class="reorder-btn"
-						onclick={() => handleMoveUp(coupon.id)}
-						disabled={index === 0}
-						type="button"
-						aria-label="Move up"
-					>&#8593;</button>
-					<button
-						class="reorder-btn"
-						onclick={() => handleMoveDown(coupon.id)}
-						disabled={index === store.coupons.length - 1}
-						type="button"
-						aria-label="Move down"
-					>&#8595;</button>
-				</div>
-				<CouponPreview {coupon} onedit={handleEdit} />
-				<button class="remove-btn" onclick={() => handleRemove(coupon.id)}>Remove</button>
+			<li class="coupon-cell">
+				<CouponPreview
+					{coupon}
+					{index}
+					total={store.coupons.length}
+					onedit={handleEdit}
+					onremove={() => handleRemove(coupon.id)}
+					onmoveup={() => handleMoveUp(coupon.id)}
+					onmovedown={() => handleMoveDown(coupon.id)}
+				/>
 			</li>
 		{/each}
 	</ul>
@@ -58,72 +49,16 @@
 		font-style: italic;
 	}
 
-	.coupon-list {
+	.coupon-grid {
 		list-style: none;
 		padding: 0;
-		display: flex;
-		flex-wrap: wrap;
-		gap: 16px;
-		justify-content: center;
+		margin: 0;
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+		gap: 10px;
 	}
 
-	.coupon-item {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		gap: 8px;
-	}
-
-	.reorder-controls {
-		display: flex;
-		gap: 4px;
-	}
-
-	.reorder-btn {
-		font-size: 14px;
-		padding: 2px 10px;
-		border: 1px solid var(--ui-border);
-		border-radius: 4px;
-		background: #fff;
-		cursor: pointer;
-		color: var(--ui-text-secondary);
-		min-width: 36px;
-		min-height: 36px;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-	}
-
-	.reorder-btn:hover:not(:disabled) {
-		background: var(--ui-bg-hover);
-		border-color: var(--ui-border-active);
-	}
-
-	.reorder-btn:disabled {
-		opacity: 0.3;
-		cursor: default;
-	}
-
-	.remove-btn {
-		font-size: 12px;
-		padding: 4px 10px;
-		border: 1px solid var(--ui-border);
-		border-radius: 4px;
-		background: #fff;
-		cursor: pointer;
-		color: var(--ui-text-muted);
-	}
-
-	.remove-btn:hover {
-		background: var(--ui-danger-bg);
-		color: var(--ui-danger-text);
-		border-color: var(--ui-danger-border);
-	}
-
-	@media (max-width: 640px) {
-		.coupon-list {
-			flex-direction: column;
-			align-items: center;
-		}
+	.coupon-cell {
+		min-width: 0;
 	}
 </style>

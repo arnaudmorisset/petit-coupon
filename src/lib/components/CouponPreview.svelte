@@ -9,12 +9,20 @@
 
 	interface Props {
 		coupon: Coupon;
+		index: number;
+		total: number;
 		onedit?: (id: CouponId, updates: Partial<Coupon>) => void;
+		onremove?: () => void;
+		onmoveup?: () => void;
+		onmovedown?: () => void;
 	}
 
-	const { coupon, onedit }: Props = $props();
+	const { coupon, index, total, onedit, onremove, onmoveup, onmovedown }: Props = $props();
 	const { themeStore } = AppContext.current();
 	const theme = $derived(themeStore.selectedTheme);
+
+	const isFirst = $derived(index === 0);
+	const isLast = $derived(index === total - 1);
 
 	let editing = $state(false);
 	let editTitle = $state("");
@@ -62,6 +70,15 @@
 	style:--title-color={theme.titleColor}
 	style:--text-color={theme.textColor}
 >
+	{#if onremove}
+		<button
+			class="remove-btn"
+			onclick={(e) => { e.stopPropagation(); onremove(); }}
+			type="button"
+			aria-label="Remove coupon"
+		>&times;</button>
+	{/if}
+
 	{#if theme.assets?.pattern}
 		<SvgPattern pattern={theme.assets.pattern} color={theme.accentColor} id="preview-{coupon.id.value}" />
 	{/if}
@@ -94,9 +111,16 @@
 				aria-label="Edit coupon text"
 			></textarea>
 			<div class="coupon-edit-actions">
-				<button class="edit-save-btn" onclick={saveEdit} type="button">Save</button>
-				<button class="edit-cancel-btn" onclick={cancelEdit} type="button">Cancel</button>
+				<button class="edit-done-btn" onclick={saveEdit} type="button">Done</button>
 			</div>
+			{#if onmoveup || onmovedown}
+				<div class="reorder-controls">
+					<button class="reorder-btn" onclick={onmoveup} disabled={isFirst}
+						type="button" aria-label="Move coupon up">&#8593;</button>
+					<button class="reorder-btn" onclick={onmovedown} disabled={isLast}
+						type="button" aria-label="Move coupon down">&#8595;</button>
+				</div>
+			{/if}
 		</div>
 	{:else}
 		<button
@@ -125,8 +149,8 @@
 		align-items: center;
 		justify-content: center;
 		text-align: center;
-		max-width: 270px;
 		width: 100%;
+		box-sizing: border-box;
 		background-color: var(--bg);
 		border-color: var(--border-color);
 		border-width: var(--border-width);
@@ -135,6 +159,36 @@
 		padding: var(--padding);
 		overflow: hidden;
 	}
+
+	.remove-btn {
+		position: absolute;
+		top: 4px;
+		right: 4px;
+		z-index: 2;
+		width: 22px;
+		height: 22px;
+		padding: 0;
+		border: none;
+		border-radius: 50%;
+		background: transparent;
+		color: var(--text-color);
+		font-size: 14px;
+		line-height: 1;
+		cursor: pointer;
+		opacity: 0.15;
+		transition: opacity 0.15s ease, background-color 0.15s ease;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	@media (hover: hover) {
+		.remove-btn { opacity: 0; }
+		.coupon-preview:hover .remove-btn { opacity: 0.7; }
+	}
+
+	.remove-btn:focus-visible { opacity: 0.7; }
+	.remove-btn:hover { background: var(--ui-danger-bg); color: var(--ui-danger-text); }
 
 	.coupon-text-btn {
 		all: unset;
@@ -186,14 +240,15 @@
 
 	.coupon-edit-title {
 		width: 100%;
-		border: 1px solid var(--border-color);
-		border-radius: 4px;
+		border: none;
+		border-bottom: 1px solid var(--border-color);
+		border-radius: 0;
 		padding: 4px;
 		font-size: 14px;
 		font-weight: 600;
 		text-align: center;
 		color: var(--title-color);
-		background-color: var(--bg);
+		background-color: transparent;
 		font-family: inherit;
 		box-sizing: border-box;
 	}
@@ -202,21 +257,22 @@
 		width: 100%;
 		flex: 1;
 		resize: none;
-		border: 1px solid var(--border-color);
-		border-radius: 4px;
+		border: none;
+		border-bottom: 1px solid var(--border-color);
+		border-radius: 0;
 		padding: 4px;
 		font-size: 12px;
 		text-align: center;
 		color: var(--text-color);
-		background-color: var(--bg);
+		background-color: transparent;
 		font-family: inherit;
 		box-sizing: border-box;
 	}
 
 	.coupon-edit-title:focus,
 	.coupon-edit-text:focus {
-		outline: 2px solid var(--ui-primary);
-		outline-offset: -2px;
+		outline: none;
+		border-bottom-color: var(--ui-primary);
 	}
 
 	.coupon-edit-actions {
@@ -225,23 +281,48 @@
 		justify-content: center;
 	}
 
-	.edit-save-btn,
-	.edit-cancel-btn {
+	.edit-done-btn {
 		font-size: 11px;
 		padding: 2px 8px;
 		border: 1px solid var(--ui-border);
 		border-radius: 4px;
-		background: #fff;
+		background: var(--ui-card-bg);
 		cursor: pointer;
 	}
 
-	.edit-save-btn:hover {
+	.edit-done-btn:hover {
 		background: var(--ui-save-bg);
 		border-color: var(--ui-save-border);
 	}
 
-	.edit-cancel-btn:hover {
-		background: var(--ui-danger-bg);
-		border-color: var(--ui-danger-border);
+	.reorder-controls {
+		display: flex;
+		gap: 4px;
+		justify-content: center;
+	}
+
+	.reorder-btn {
+		font-size: 12px;
+		padding: 1px 6px;
+		border: 1px solid var(--ui-border);
+		border-radius: 4px;
+		background: var(--ui-card-bg);
+		cursor: pointer;
+		color: var(--ui-text-secondary);
+		min-width: 24px;
+		min-height: 20px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.reorder-btn:hover:not(:disabled) {
+		background: var(--ui-bg-hover);
+		border-color: var(--ui-border-active);
+	}
+
+	.reorder-btn:disabled {
+		opacity: 0.3;
+		cursor: default;
 	}
 </style>
