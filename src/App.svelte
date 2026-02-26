@@ -3,8 +3,8 @@
   import CouponForm from './lib/components/CouponForm.svelte'
   import CouponList from './lib/components/CouponList.svelte'
   import DownloadButton from './lib/components/DownloadButton.svelte'
+  import PreviewPanel from './lib/components/PreviewPanel.svelte'
   import Section from './lib/components/Section.svelte'
-  import SheetPreview from './lib/components/SheetPreview.svelte'
   import ThemePicker from './lib/components/ThemePicker.svelte'
   import { UuidGenerator } from './lib/domain/id-generator'
   import { THEME_REGISTRY } from './lib/domain/themes'
@@ -31,6 +31,8 @@
 
   const ctx = new AppContext(couponStore, themeStore, stepperStore, persistenceManager)
   ctx.provide()
+
+  let showSheet = $state(false)
 </script>
 
 <header>
@@ -47,14 +49,20 @@
     </Section>
     {#if !couponStore.isEmpty}
       <Section label="Your Coupons" suffix="({couponStore.count})">
+        {#snippet action()}
+          <button class="sheet-toggle" onclick={() => showSheet = !showSheet}
+            type="button" aria-label="Toggle sheet preview">
+            {showSheet ? 'Hide' : 'Show'} sheet preview
+          </button>
+        {/snippet}
         <CouponList />
       </Section>
     {/if}
   </div>
 
   <div class="sidebar">
-    <Section label="Preview">
-      <SheetPreview />
+    <Section label={showSheet ? 'Print Preview' : 'Preview'}>
+      <PreviewPanel {showSheet} />
     </Section>
     <DownloadButton />
     {#if !couponStore.isEmpty}
@@ -93,6 +101,21 @@
     display: flex;
     flex-direction: column;
     gap: 16px;
+  }
+
+  .sheet-toggle {
+    padding: 4px 10px;
+    border-radius: 6px;
+    border: 1px solid var(--ui-border);
+    background: var(--ui-card-bg);
+    font-size: 11px;
+    color: var(--ui-text-muted);
+    cursor: pointer;
+    transition: background 0.1s ease;
+  }
+
+  .sheet-toggle:hover {
+    background: var(--ui-bg-hover);
   }
 
   @media (max-width: 768px) {

@@ -1,11 +1,21 @@
 <script lang="ts">
   import type { Snippet } from 'svelte'
 
-  const { label, suffix, children }: { label: string; suffix?: string | undefined; children: Snippet } = $props()
+  const { label, suffix, children, action }: {
+    label: string;
+    suffix?: string | undefined;
+    children: Snippet;
+    action?: Snippet | undefined;
+  } = $props()
 </script>
 
 <section class="card-section">
-  <h2 class="label">{label}{#if suffix}<span class="suffix"> {suffix}</span>{/if}</h2>
+  <div class="section-header">
+    <h2 class="label">{label}{#if suffix}<span class="suffix"> {suffix}</span>{/if}</h2>
+    {#if action}
+      {@render action()}
+    {/if}
+  </div>
   {@render children()}
 </section>
 
@@ -17,13 +27,20 @@
     padding: 20px 24px;
   }
 
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+
   .label {
     font-size: 11px;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.3px;
     color: var(--ui-label-text);
-    margin: 0 0 12px;
+    margin: 0;
   }
 
   .suffix {
