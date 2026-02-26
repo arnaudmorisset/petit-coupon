@@ -288,6 +288,7 @@
 		border-radius: 4px;
 		background: var(--ui-card-bg);
 		cursor: pointer;
+		transition: all 0.15s ease;
 	}
 
 	.edit-done-btn:hover {
@@ -314,11 +315,12 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
+		transition: all 0.15s ease;
 	}
 
 	.reorder-btn:hover:not(:disabled) {
 		background: var(--ui-bg-hover);
-		border-color: var(--ui-border-active);
+		border-color: var(--ui-border-focus);
 	}
 
 	.reorder-btn:disabled {

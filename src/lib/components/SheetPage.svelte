@@ -85,7 +85,7 @@
 		position: relative;
 		width: 100%;
 		aspect-ratio: var(--page-aspect);
-		background: #fff;
+		background: var(--ui-card-bg);
 		border: 1px solid var(--ui-border);
 		border-radius: 4px;
 		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);

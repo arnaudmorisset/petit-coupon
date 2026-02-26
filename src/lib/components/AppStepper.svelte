@@ -100,7 +100,7 @@
 	}
 
 	.step-indicator:hover:not(:disabled) {
-		background-color: rgba(59, 130, 246, 0.08);
+		background-color: var(--ui-bg-hover);
 	}
 
 	.step-indicator:disabled {
@@ -195,7 +195,7 @@
 		font-weight: 500;
 		cursor: pointer;
 		border: 1px solid var(--ui-border);
-		background: #fff;
+		background: var(--ui-card-bg);
 		color: var(--ui-text-secondary);
 		transition: all 0.15s;
 		min-width: 100px;
@@ -203,7 +203,7 @@
 
 	.nav-btn:hover:not(:disabled) {
 		background: var(--ui-bg-subtle);
-		border-color: var(--ui-border-active);
+		border-color: var(--ui-border-focus);
 	}
 
 	.nav-btn:disabled {

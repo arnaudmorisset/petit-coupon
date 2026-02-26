@@ -17,16 +17,15 @@
 <style>
 	.clear-link {
 		all: unset;
-		font-size: 13px;
-		color: var(--ui-text-muted);
+		font-size: 12px;
+		color: var(--ui-text-ghost);
 		cursor: pointer;
-		text-decoration: underline;
-		text-underline-offset: 2px;
 		text-align: center;
 		display: block;
+		transition: color 0.15s ease;
 	}
 
 	.clear-link:hover {
-		opacity: 1;
+		color: var(--ui-text-muted);
 	}
 </style>

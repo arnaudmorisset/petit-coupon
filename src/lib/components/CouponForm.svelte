@@ -112,7 +112,7 @@
 
 	.title-input:focus,
 	.body-input:focus {
-		border-color: var(--ui-border-active);
+		border-color: var(--ui-border-focus);
 	}
 
 	.body-row {
@@ -134,7 +134,7 @@
 		color: white;
 		cursor: pointer;
 		background: var(--add-bg);
-		transition: opacity 0.15s ease;
+		transition: all 0.15s ease;
 	}
 
 	.add-button:disabled {
@@ -151,7 +151,7 @@
 		font-family: inherit;
 		font-size: 10px;
 		font-weight: 600;
-		color: var(--ui-label-suffix);
+		color: var(--ui-text-faint);
 		text-transform: uppercase;
 		letter-spacing: 0.5px;
 		margin-bottom: 8px;
@@ -170,9 +170,9 @@
 		background: var(--ui-bg-subtle);
 		font-family: inherit;
 		font-size: 12px;
-		color: var(--ui-text-muted);
+		color: var(--ui-text-secondary);
 		cursor: pointer;
-		transition: all 0.1s ease;
+		transition: all 0.15s ease;
 	}
 
 	.suggestion-chip:hover {

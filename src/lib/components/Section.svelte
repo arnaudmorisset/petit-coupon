@@ -44,7 +44,7 @@
   }
 
   .suffix {
-    color: var(--ui-label-suffix);
-    font-weight: 500;
+    color: var(--ui-text-faint);
+    font-weight: 400;
   }
 </style>

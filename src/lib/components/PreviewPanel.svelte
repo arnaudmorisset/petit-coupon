@@ -44,7 +44,7 @@
 
 	.empty-text {
 		font-size: 13px;
-		color: var(--ui-text-muted);
+		color: var(--ui-text-disabled);
 		margin: 8px 0 0;
 	}
 

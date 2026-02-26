@@ -35,8 +35,9 @@
   let showSheet = $state(false)
 </script>
 
-<header>
-  <h1>Petit Coupon</h1>
+<header class="app-header">
+  <h1 class="app-title">Petit Coupon</h1>
+  <p class="app-subtitle">Printable love coupons, made simple</p>
 </header>
 
 <div class="layout">
@@ -72,11 +73,27 @@
 </div>
 
 <style>
-  header {
+  .app-header {
     text-align: center;
     max-width: 1100px;
     margin: 0 auto;
-    padding: 0 24px;
+    padding: 40px 20px 10px;
+  }
+
+  .app-title {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 36px;
+    font-weight: 400;
+    color: var(--ui-text-primary);
+    margin: 0;
+    letter-spacing: -0.5px;
+  }
+
+  .app-subtitle {
+    font-size: 15px;
+    font-weight: 400;
+    color: var(--ui-text-muted);
+    margin: 6px 0 0;
   }
 
   .layout {
@@ -111,7 +128,7 @@
     font-size: 11px;
     color: var(--ui-text-muted);
     cursor: pointer;
-    transition: background 0.1s ease;
+    transition: all 0.15s ease;
   }
 
   .sheet-toggle:hover {

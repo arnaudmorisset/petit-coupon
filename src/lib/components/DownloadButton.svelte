@@ -12,6 +12,7 @@
 	import { AppContext } from "../stores/context";
 
 	const { couponStore: store, themeStore } = AppContext.current();
+	const theme = $derived(themeStore.selectedTheme);
 
 	const assetRenderer = new CouponAssetRenderer(new SvgPathRenderer());
 	const renderer = new JsPdfCouponRenderer(assetRenderer);
@@ -28,6 +29,12 @@
 	let generating = $state(false);
 	let error = $state("");
 
+	const label = $derived(() => {
+		if (generating) return "Generating\u2026";
+		const count = store.count;
+		return `\u2193 Download PDF (${count} coupon${count !== 1 ? "s" : ""})`;
+	});
+
 	function handleDownload(): void {
 		generating = true;
 		error = "";
@@ -42,14 +49,41 @@
 	}
 </script>
 
-<button onclick={handleDownload} disabled={store.isEmpty || generating}>
-	{generating ? "Generating..." : "Download PDF"}
+<button
+	class="download-btn"
+	onclick={handleDownload}
+	disabled={store.isEmpty || generating}
+	style:--dl-bg={theme.borderColor}
+	style:--dl-shadow="{theme.borderColor}30"
+>
+	{label()}
 </button>
 {#if error.length > 0}
 	<p class="download-error" role="alert">{error}</p>
 {/if}
 
 <style>
+	.download-btn {
+		width: 100%;
+		padding: 14px 20px;
+		border-radius: 10px;
+		border: none;
+		font-size: 15px;
+		font-weight: 600;
+		cursor: pointer;
+		transition: all 0.15s ease;
+		background: var(--dl-bg);
+		color: white;
+		box-shadow: 0 2px 12px var(--dl-shadow);
+	}
+
+	.download-btn:disabled {
+		background: var(--ui-disabled-bg);
+		color: var(--ui-text-faint);
+		cursor: default;
+		box-shadow: none;
+	}
+
 	.download-error {
 		color: var(--ui-danger-text);
 		font-size: 13px;
