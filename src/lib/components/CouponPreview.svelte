@@ -327,4 +327,42 @@
 		opacity: 0.3;
 		cursor: default;
 	}
+
+	@media (max-width: 768px) {
+		.remove-btn {
+			width: 32px;
+			height: 32px;
+			font-size: 18px;
+			opacity: 0.3;
+		}
+
+		.edit-done-btn {
+			padding: 6px 14px;
+			font-size: 13px;
+		}
+
+		.reorder-btn {
+			min-height: 32px;
+			min-width: 32px;
+			font-size: 16px;
+		}
+	}
+
+	@media (max-width: 480px) {
+		.coupon-title {
+			font-size: 14px;
+		}
+
+		.coupon-text {
+			font-size: 11px;
+		}
+
+		.coupon-edit-title {
+			font-size: 13px;
+		}
+
+		.coupon-edit-text {
+			font-size: 11px;
+		}
+	}
 </style>

@@ -27,4 +27,10 @@
 			grid-template-columns: repeat(2, 1fr);
 		}
 	}
+
+	@media (max-width: 480px) {
+		.theme-picker {
+			gap: 8px;
+		}
+	}
 </style>

@@ -222,7 +222,7 @@
 		border-color: var(--ui-primary-hover);
 	}
 
-	@media (max-width: 640px) {
+	@media (max-width: 768px) {
 		.step-label {
 			font-size: 10px;
 		}
@@ -238,10 +238,35 @@
 		.nav-btn {
 			flex: 1;
 			min-width: 0;
+			min-height: 44px;
 		}
 
 		.step-navigation {
 			padding: 0 8px;
+		}
+	}
+
+	@media (max-width: 480px) {
+		.step-label {
+			font-size: 9px;
+		}
+
+		.step-connector {
+			width: 16px;
+		}
+
+		.step-indicator {
+			padding: 6px 4px;
+		}
+
+		.step-number {
+			width: 28px;
+			height: 28px;
+			font-size: 12px;
+		}
+
+		.step-title {
+			font-size: 1.2em;
 		}
 	}
 </style>

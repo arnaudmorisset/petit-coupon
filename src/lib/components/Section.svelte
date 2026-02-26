@@ -47,4 +47,26 @@
     color: var(--ui-text-faint);
     font-weight: 400;
   }
+
+  @media (max-width: 768px) {
+    .card-section {
+      padding: 16px 18px;
+      border-radius: 12px;
+    }
+
+    .section-header {
+      margin-bottom: 10px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .card-section {
+      padding: 14px 14px;
+      border-radius: 10px;
+    }
+
+    .section-header {
+      margin-bottom: 8px;
+    }
+  }
 </style>

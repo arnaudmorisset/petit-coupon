@@ -179,4 +179,27 @@
 		background: var(--chip-hover-bg);
 		border-color: var(--chip-hover-border);
 	}
+
+	@media (max-width: 768px) {
+		.suggestion-chip {
+			padding: 8px 14px;
+			font-size: 13px;
+		}
+	}
+
+	@media (max-width: 480px) {
+		.body-row {
+			flex-direction: column;
+		}
+
+		.add-button {
+			width: 100%;
+			padding: 12px;
+		}
+
+		.title-input,
+		.body-input {
+			font-size: 16px;
+		}
+	}
 </style>

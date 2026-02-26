@@ -138,10 +138,48 @@
   @media (max-width: 768px) {
     .layout {
       grid-template-columns: 1fr;
+      gap: 24px;
+      padding: 16px 16px 40px;
     }
 
     .sidebar {
       position: static;
+    }
+
+    .app-header {
+      padding: 24px 16px 8px;
+    }
+
+    .app-title {
+      font-size: 30px;
+    }
+
+    .app-subtitle {
+      font-size: 14px;
+    }
+
+    .sheet-toggle {
+      min-height: 36px;
+      padding: 6px 12px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .layout {
+      gap: 16px;
+      padding: 12px 12px 32px;
+    }
+
+    .app-header {
+      padding: 16px 12px 6px;
+    }
+
+    .app-title {
+      font-size: 24px;
+    }
+
+    .app-subtitle {
+      font-size: 13px;
     }
   }
 </style>

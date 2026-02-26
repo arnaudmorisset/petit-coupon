@@ -89,4 +89,18 @@
 		opacity: 0.85;
 		line-height: 1.4;
 	}
+
+	@media (max-width: 480px) {
+		.preview-coupon {
+			padding: 12px 14px;
+		}
+
+		.preview-coupon-title {
+			font-size: 14px;
+		}
+
+		.preview-coupon-text {
+			font-size: 12px;
+		}
+	}
 </style>

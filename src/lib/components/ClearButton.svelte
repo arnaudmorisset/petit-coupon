@@ -28,4 +28,11 @@
 	.clear-link:hover {
 		color: var(--ui-text-muted);
 	}
+
+	@media (max-width: 768px) {
+		.clear-link {
+			padding: 8px;
+			font-size: 13px;
+		}
+	}
 </style>

@@ -61,4 +61,11 @@
 	.coupon-cell {
 		min-width: 0;
 	}
+
+	@media (max-width: 480px) {
+		.coupon-grid {
+			grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+			gap: 8px;
+		}
+	}
 </style>

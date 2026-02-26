@@ -67,6 +67,7 @@
 		width: 100%;
 		padding: 14px 20px;
 		border-radius: 10px;
+		min-height: 48px;
 		border: none;
 		font-size: 15px;
 		font-weight: 600;

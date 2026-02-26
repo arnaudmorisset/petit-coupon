@@ -55,4 +55,13 @@
 		max-width: 600px;
 		margin: 0 auto;
 	}
+
+	@media (max-width: 480px) {
+		.sheet-preview {
+			max-width: 100%;
+			overflow-x: auto;
+			-webkit-overflow-scrolling: touch;
+			gap: 16px;
+		}
+	}
 </style>
