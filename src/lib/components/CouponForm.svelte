@@ -1,109 +1,182 @@
 <script lang="ts">
 	import { Coupon } from "../domain/coupon";
+	import { COUPON_SUGGESTIONS } from "../domain/suggestions";
 	import { AppContext } from "../stores/context";
 
-	const { couponStore: store } = AppContext.current();
+	const { couponStore: store, themeStore } = AppContext.current();
+	const theme = $derived(themeStore.selectedTheme);
 
 	let title = $state("");
 	let text = $state("");
+	let titleRef = $state<HTMLInputElement | undefined>(undefined);
+	let bodyRef = $state<HTMLInputElement | undefined>(undefined);
 
-	const hasContent = $derived(title.trim().length > 0 || text.trim().length > 0);
+	const canAdd = $derived(title.trim().length > 0 || text.trim().length > 0);
 
-	function handleSubmit(event: SubmitEvent): void {
-		event.preventDefault();
-		if (!hasContent) {
+	function handleAdd(): void {
+		if (!canAdd) {
 			return;
 		}
 		store.add(new Coupon(store.nextId(), text.trim(), title.trim()));
 		title = "";
 		text = "";
+		titleRef?.focus();
+	}
+
+	function handleTitleKeydown(e: KeyboardEvent): void {
+		if (e.key === "Enter") {
+			e.preventDefault();
+			bodyRef?.focus();
+		}
+	}
+
+	function handleBodyKeydown(e: KeyboardEvent): void {
+		if (e.key === "Enter") {
+			e.preventDefault();
+			handleAdd();
+		}
+	}
+
+	function handleSuggestion(suggestion: string): void {
+		store.add(new Coupon(store.nextId(), suggestion, ""));
 	}
 </script>
 
-<form class="coupon-form" onsubmit={handleSubmit}>
-	<div class="coupon-fields">
+<div class="form" style:--add-bg={theme.borderColor} style:--chip-hover-bg={theme.accentColor} style:--chip-hover-border={theme.borderColor}>
+	<input
+		class="title-input"
+		type="text"
+		placeholder="Title (optional)"
+		aria-label="Coupon title"
+		bind:this={titleRef}
+		bind:value={title}
+		onkeydown={handleTitleKeydown}
+	/>
+
+	<div class="body-row">
 		<input
-			class="coupon-title-input"
-			bind:value={title}
-			placeholder="Title (optional)"
-			aria-label="Coupon title"
-		/>
-		<textarea
-			class="coupon-input"
-			bind:value={text}
-			placeholder="Enter coupon text..."
-			rows="2"
+			class="body-input"
+			type="text"
+			placeholder="e.g. One breakfast in bed"
 			aria-label="Coupon text"
-		></textarea>
+			bind:this={bodyRef}
+			bind:value={text}
+			onkeydown={handleBodyKeydown}
+		/>
+		<button
+			class="add-button"
+			aria-label="Add coupon"
+			onclick={handleAdd}
+			disabled={!canAdd}
+		>+</button>
 	</div>
-	<button class="add-btn" type="submit" disabled={!hasContent}>
-		Add
-	</button>
-</form>
+
+	<div class="suggestions">
+		<span class="suggestions-label">Ideas</span>
+		<div class="suggestions-list">
+			{#each COUPON_SUGGESTIONS as suggestion}
+				<button
+					class="suggestion-chip"
+					aria-label="Add coupon: {suggestion}"
+					onclick={() => handleSuggestion(suggestion)}
+				>{suggestion}</button>
+			{/each}
+		</div>
+	</div>
+</div>
 
 <style>
-	.coupon-form {
+	.form {
 		display: flex;
+		flex-direction: column;
 		gap: 8px;
-		align-items: flex-start;
-		justify-content: center;
 		max-width: 500px;
 		margin: 0 auto;
 	}
 
-	.coupon-fields {
-		flex: 1;
-		display: flex;
-		flex-direction: column;
-		gap: 4px;
+	.title-input,
+	.body-input {
+		width: 100%;
+		padding: 10px 14px;
+		border-radius: 8px;
+		border: 1px solid var(--ui-border);
+		font-family: inherit;
+		font-size: 14px;
+		outline: none;
+		box-sizing: border-box;
 	}
 
-	.coupon-title-input {
-		padding: 8px 12px;
-		border: 1px solid var(--ui-border);
-		border-radius: 8px;
-		font-size: 14px;
-		font-family: inherit;
+	.title-input {
 		font-weight: 600;
-		min-height: 40px;
 	}
 
-	.coupon-title-input:focus {
-		outline: 2px solid var(--ui-primary);
-		outline-offset: -1px;
-		border-color: var(--ui-primary);
+	.title-input:focus,
+	.body-input:focus {
+		border-color: var(--ui-border-active);
 	}
 
-	.coupon-input {
-		padding: 8px 12px;
-		border: 1px solid var(--ui-border);
+	.body-row {
+		display: flex;
+		gap: 8px;
+	}
+
+	.body-input {
+		flex: 1;
+	}
+
+	.add-button {
+		padding: 10px 18px;
 		border-radius: 8px;
-		font-size: 14px;
+		border: none;
+		font-size: 18px;
+		font-weight: 700;
+		line-height: 1;
+		color: white;
+		cursor: pointer;
+		background: var(--add-bg);
+		transition: opacity 0.15s ease;
+	}
+
+	.add-button:disabled {
+		background: var(--ui-border);
+		cursor: default;
+	}
+
+	.suggestions {
+		margin-top: 6px;
+	}
+
+	.suggestions-label {
+		display: block;
 		font-family: inherit;
-		resize: vertical;
-		min-height: 40px;
+		font-size: 10px;
+		font-weight: 600;
+		color: var(--ui-label-suffix);
+		text-transform: uppercase;
+		letter-spacing: 0.5px;
+		margin-bottom: 8px;
 	}
 
-	.coupon-input:focus {
-		outline: 2px solid var(--ui-primary);
-		outline-offset: -1px;
-		border-color: var(--ui-primary);
+	.suggestions-list {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 6px;
 	}
 
-	.add-btn {
-		padding: 8px 20px;
-		white-space: nowrap;
-		min-height: 40px;
+	.suggestion-chip {
+		padding: 5px 12px;
+		border-radius: 20px;
+		border: 1px solid var(--ui-border);
+		background: var(--ui-bg-subtle);
+		font-family: inherit;
+		font-size: 12px;
+		color: var(--ui-text-muted);
+		cursor: pointer;
+		transition: all 0.1s ease;
 	}
 
-	@media (max-width: 640px) {
-		.coupon-form {
-			flex-direction: column;
-			align-items: stretch;
-		}
-
-		.add-btn {
-			width: 100%;
-		}
+	.suggestion-chip:hover {
+		background: var(--chip-hover-bg);
+		border-color: var(--chip-hover-border);
 	}
 </style>
