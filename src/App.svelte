@@ -13,12 +13,10 @@
   import { AppContext } from './lib/stores/context'
   import { CouponStore } from './lib/stores/coupon-store.svelte'
   import { PersistenceManager } from './lib/stores/persistence-manager.svelte'
-  import { StepperStore } from './lib/stores/stepper-store.svelte'
   import { ThemeStore } from './lib/stores/theme-store.svelte'
 
   const couponStore = new CouponStore(new UuidGenerator())
   const themeStore = new ThemeStore(THEME_REGISTRY)
-  const stepperStore = new StepperStore(couponStore)
 
   const storage = new LocalStorageAdapter(localStorage)
   const serializer = new SessionSerializer(THEME_REGISTRY)
@@ -29,7 +27,7 @@
     themeStore,
   )
 
-  const ctx = new AppContext(couponStore, themeStore, stepperStore, persistenceManager)
+  const ctx = new AppContext(couponStore, themeStore, persistenceManager)
   ctx.provide()
 
   let showSheet = $state(false)
