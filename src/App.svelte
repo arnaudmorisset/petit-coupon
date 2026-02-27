@@ -1,4 +1,5 @@
 <script lang="ts">
+  import ErrorFallback from './lib/components/ErrorFallback.svelte'
   import ClearButton from './lib/components/ClearButton.svelte'
   import CouponForm from './lib/components/CouponForm.svelte'
   import CouponList from './lib/components/CouponList.svelte'
@@ -33,42 +34,48 @@
   let showSheet = $state(false)
 </script>
 
-<header class="app-header">
-  <h1 class="app-title">Petit Coupon</h1>
-  <p class="app-subtitle">Printable love coupons, made simple</p>
-</header>
+<svelte:boundary onerror={(error) => console.error('Petit Coupon rendering error:', error)}>
+  <header class="app-header">
+    <h1 class="app-title">Petit Coupon</h1>
+    <p class="app-subtitle">Printable love coupons, made simple</p>
+  </header>
 
-<div class="layout">
-  <div class="workspace">
-    <Section label="Choose a Theme">
-      <ThemePicker />
-    </Section>
-    <Section label="Add a Coupon">
-      <CouponForm />
-    </Section>
-    {#if !couponStore.isEmpty}
-      <Section label="Your Coupons" suffix="({couponStore.count})">
-        {#snippet action()}
-          <button class="sheet-toggle" onclick={() => showSheet = !showSheet}
-            type="button" aria-label="Toggle sheet preview">
-            {showSheet ? 'Hide' : 'Show'} sheet preview
-          </button>
-        {/snippet}
-        <CouponList />
+  <div class="layout">
+    <div class="workspace">
+      <Section label="Choose a Theme">
+        <ThemePicker />
       </Section>
-    {/if}
+      <Section label="Add a Coupon">
+        <CouponForm />
+      </Section>
+      {#if !couponStore.isEmpty}
+        <Section label="Your Coupons" suffix="({couponStore.count})">
+          {#snippet action()}
+            <button class="sheet-toggle" onclick={() => showSheet = !showSheet}
+              type="button" aria-label="Toggle sheet preview">
+              {showSheet ? 'Hide' : 'Show'} sheet preview
+            </button>
+          {/snippet}
+          <CouponList />
+        </Section>
+      {/if}
+    </div>
+
+    <div class="sidebar">
+      <Section label={showSheet ? 'Print Preview' : 'Preview'}>
+        <PreviewPanel {showSheet} />
+      </Section>
+      <DownloadButton />
+      {#if !couponStore.isEmpty}
+        <ClearButton />
+      {/if}
+    </div>
   </div>
 
-  <div class="sidebar">
-    <Section label={showSheet ? 'Print Preview' : 'Preview'}>
-      <PreviewPanel {showSheet} />
-    </Section>
-    <DownloadButton />
-    {#if !couponStore.isEmpty}
-      <ClearButton />
-    {/if}
-  </div>
-</div>
+  {#snippet failed(error, reset)}
+    <ErrorFallback {error} {reset} />
+  {/snippet}
+</svelte:boundary>
 
 <style>
   .app-header {
