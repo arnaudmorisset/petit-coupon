@@ -13,6 +13,7 @@ const emptyModule = path.resolve(
 
 // https://vite.dev/config/
 export default defineConfig({
+	base: "/petit-coupon/",
 	plugins: [svelte()],
 	resolve: {
 		alias: Object.fromEntries(
