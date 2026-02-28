@@ -10,6 +10,7 @@ function renderButton(): TestStores {
 	render(DownloadButtonHarness, {
 		couponStore: stores.couponStore,
 		themeStore: stores.themeStore,
+		statusStore: stores.statusStore,
 	});
 	return stores;
 }

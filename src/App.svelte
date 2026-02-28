@@ -6,6 +6,7 @@
   import DownloadButton from './lib/components/DownloadButton.svelte'
   import PreviewPanel from './lib/components/PreviewPanel.svelte'
   import Section from './lib/components/Section.svelte'
+  import StatusAnnouncer from './lib/components/StatusAnnouncer.svelte'
   import ThemePicker from './lib/components/ThemePicker.svelte'
   import { UuidGenerator } from './lib/domain/id-generator'
   import { THEME_REGISTRY } from './lib/domain/themes'
@@ -14,10 +15,12 @@
   import { AppContext } from './lib/stores/context'
   import { CouponStore } from './lib/stores/coupon-store.svelte'
   import { PersistenceManager } from './lib/stores/persistence-manager.svelte'
+  import { StatusStore } from './lib/stores/status-store.svelte'
   import { ThemeStore } from './lib/stores/theme-store.svelte'
 
   const couponStore = new CouponStore(new UuidGenerator())
   const themeStore = new ThemeStore(THEME_REGISTRY)
+  const statusStore = new StatusStore()
 
   const storage = new LocalStorageAdapter(localStorage)
   const serializer = new SessionSerializer(THEME_REGISTRY)
@@ -28,13 +31,14 @@
     themeStore,
   )
 
-  const ctx = new AppContext(couponStore, themeStore, persistenceManager)
+  const ctx = new AppContext(couponStore, themeStore, statusStore, persistenceManager)
   ctx.provide()
 
   let showSheet = $state(false)
 </script>
 
 <svelte:boundary onerror={(error) => console.error('Petit Coupon rendering error:', error)}>
+  <StatusAnnouncer />
   <header class="app-header">
     <h1 class="app-title">Petit Coupon</h1>
     <p class="app-subtitle">Printable love coupons, made simple</p>

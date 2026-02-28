@@ -21,6 +21,7 @@ function renderPreview(
 	render(CouponPreviewHarness, {
 		couponStore: stores.couponStore,
 		themeStore: stores.themeStore,
+		statusStore: stores.statusStore,
 		coupon: coupon ?? new Coupon(new CouponId("c1"), "Free hug", "Gift"),
 		index: index ?? 0,
 		total: total ?? 1,
@@ -139,5 +140,43 @@ describe("CouponPreview", () => {
 		await fireEvent.click(screen.getByText("Free hug"));
 		expect(screen.getByLabelText("Move coupon up")).toBeEnabled();
 		expect(screen.getByLabelText("Move coupon down")).toBeDisabled();
+	});
+
+	it("announces when a coupon is updated", async () => {
+		const onedit = vi.fn();
+		const stores = renderPreview({ onedit });
+		await fireEvent.click(screen.getByText("Free hug"));
+		await fireEvent.input(screen.getByLabelText("Edit coupon text"), {
+			target: { value: "Two free hugs" },
+		});
+		await fireEvent.click(screen.getByText("Done"));
+		expect(stores.statusStore.message).toBe("Coupon updated");
+	});
+
+	it("does not announce when edit is cancelled", async () => {
+		const stores = renderPreview({ onedit: vi.fn() });
+		await fireEvent.click(screen.getByText("Free hug"));
+		await fireEvent.keyDown(screen.getByLabelText("Edit coupon title"), {
+			key: "Escape",
+		});
+		expect(stores.statusStore.message).toBe("");
+	});
+
+	it("limits edit title input to 80 characters", async () => {
+		renderPreview({ onedit: vi.fn() });
+		await fireEvent.click(screen.getByText("Free hug"));
+		expect(screen.getByLabelText("Edit coupon title")).toHaveAttribute(
+			"maxlength",
+			"80",
+		);
+	});
+
+	it("limits edit body textarea to 500 characters", async () => {
+		renderPreview({ onedit: vi.fn() });
+		await fireEvent.click(screen.getByText("Free hug"));
+		expect(screen.getByLabelText("Edit coupon text")).toHaveAttribute(
+			"maxlength",
+			"500",
+		);
 	});
 });

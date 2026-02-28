@@ -8,6 +8,7 @@ function renderForm(): TestStores {
 	render(CouponFormHarness, {
 		couponStore: stores.couponStore,
 		themeStore: stores.themeStore,
+		statusStore: stores.statusStore,
 	});
 	return stores;
 }
@@ -143,5 +144,52 @@ describe("CouponForm", () => {
 		expect(stores.couponStore.count).toBe(1);
 		expect(stores.couponStore.coupons[0]?.title).toBe("Special");
 		expect(stores.couponStore.coupons[0]?.text).toBe("");
+	});
+
+	it("announces when a coupon is added without title", async () => {
+		const stores = renderForm();
+		await fireEvent.input(screen.getByLabelText("Coupon text"), {
+			target: { value: "Free hug" },
+		});
+		await fireEvent.click(screen.getByLabelText("Add coupon"));
+		expect(stores.statusStore.message).toBe("Coupon added");
+	});
+
+	it("announces with title when coupon has a title", async () => {
+		const stores = renderForm();
+		await fireEvent.input(screen.getByLabelText("Coupon title"), {
+			target: { value: "Gift" },
+		});
+		await fireEvent.input(screen.getByLabelText("Coupon text"), {
+			target: { value: "Free hug" },
+		});
+		await fireEvent.click(screen.getByLabelText("Add coupon"));
+		expect(stores.statusStore.message).toBe("Coupon added: Gift");
+	});
+
+	it("announces when a suggestion chip is clicked", async () => {
+		const stores = renderForm();
+		await fireEvent.click(
+			screen.getByLabelText("Add coupon: One breakfast in bed"),
+		);
+		expect(stores.statusStore.message).toBe(
+			"Coupon added: One breakfast in bed",
+		);
+	});
+
+	it("limits title input to 80 characters", () => {
+		renderForm();
+		expect(screen.getByLabelText("Coupon title")).toHaveAttribute(
+			"maxlength",
+			"80",
+		);
+	});
+
+	it("limits body input to 500 characters", () => {
+		renderForm();
+		expect(screen.getByLabelText("Coupon text")).toHaveAttribute(
+			"maxlength",
+			"500",
+		);
 	});
 });

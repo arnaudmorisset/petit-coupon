@@ -1,0 +1,23 @@
+<script lang="ts">
+	import { AppContext } from "../stores/context";
+
+	const { statusStore } = AppContext.current();
+</script>
+
+<div class="sr-only" aria-live="polite" aria-atomic="true">
+	{statusStore.message}
+</div>
+
+<style>
+	.sr-only {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		padding: 0;
+		margin: -1px;
+		overflow: hidden;
+		clip: rect(0, 0, 0, 0);
+		white-space: nowrap;
+		border-width: 0;
+	}
+</style>

@@ -11,7 +11,7 @@
 	import { SvgPathRenderer } from "../pdf/svg-path-renderer";
 	import { AppContext } from "../stores/context";
 
-	const { couponStore: store, themeStore } = AppContext.current();
+	const { couponStore: store, themeStore, statusStore } = AppContext.current();
 	const theme = $derived(themeStore.selectedTheme);
 
 	const assetRenderer = new CouponAssetRenderer(new SvgPathRenderer());
@@ -41,6 +41,7 @@
 		try {
 			const blob = renderer.render(store.coupons, layout, themeStore.selectedTheme, APP_FONT_REGISTRY);
 			downloadService.download(blob, "petit-coupon.pdf");
+			statusStore.announce("PDF downloaded successfully");
 		} catch (e) {
 			error = e instanceof Error ? e.message : "PDF generation failed";
 		} finally {

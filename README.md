@@ -13,6 +13,7 @@ Create beautiful love coupons, choose a theme, write your messages, and download
 - Auto-scaling text that fits perfectly in each coupon
 - High-quality vector PDF output (jsPDF, no html2canvas)
 - Session persistence via localStorage
+- Accessible — screen reader announcements, reduced motion support, input length limits
 - Fully client-side — your data never leaves your browser
 
 ## Tech Stack

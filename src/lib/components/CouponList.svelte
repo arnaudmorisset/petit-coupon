@@ -4,10 +4,11 @@
 	import { AppContext } from "../stores/context";
 	import CouponPreview from "./CouponPreview.svelte";
 
-	const { couponStore: store } = AppContext.current();
+	const { couponStore: store, statusStore } = AppContext.current();
 
 	function handleRemove(id: CouponId): void {
 		store.remove(id);
+		statusStore.announce("Coupon removed");
 	}
 
 	function handleEdit(id: CouponId, updates: Partial<Coupon>): void {
@@ -16,10 +17,12 @@
 
 	function handleMoveUp(id: CouponId): void {
 		store.moveCoupon(id, "up");
+		statusStore.announce("Coupon moved up");
 	}
 
 	function handleMoveDown(id: CouponId): void {
 		store.moveCoupon(id, "down");
+		statusStore.announce("Coupon moved down");
 	}
 </script>
 

@@ -3,7 +3,7 @@
 	import { COUPON_SUGGESTIONS } from "../domain/suggestions";
 	import { AppContext } from "../stores/context";
 
-	const { couponStore: store, themeStore } = AppContext.current();
+	const { couponStore: store, themeStore, statusStore } = AppContext.current();
 	const theme = $derived(themeStore.selectedTheme);
 
 	let title = $state("");
@@ -17,10 +17,12 @@
 		if (!canAdd) {
 			return;
 		}
-		store.add(new Coupon(store.nextId(), text.trim(), title.trim()));
+		const trimmedTitle = title.trim();
+		store.add(new Coupon(store.nextId(), text.trim(), trimmedTitle));
 		title = "";
 		text = "";
 		titleRef?.focus();
+		statusStore.announce(trimmedTitle.length > 0 ? `Coupon added: ${trimmedTitle}` : "Coupon added");
 	}
 
 	function handleTitleKeydown(e: KeyboardEvent): void {
@@ -39,6 +41,7 @@
 
 	function handleSuggestion(suggestion: string): void {
 		store.add(new Coupon(store.nextId(), suggestion, ""));
+		statusStore.announce(`Coupon added: ${suggestion}`);
 	}
 </script>
 
@@ -48,6 +51,7 @@
 		type="text"
 		placeholder="Title (optional)"
 		aria-label="Coupon title"
+		maxlength="80"
 		bind:this={titleRef}
 		bind:value={title}
 		onkeydown={handleTitleKeydown}
@@ -59,6 +63,7 @@
 			type="text"
 			placeholder="e.g. One breakfast in bed"
 			aria-label="Coupon text"
+			maxlength="500"
 			bind:this={bodyRef}
 			bind:value={text}
 			onkeydown={handleBodyKeydown}

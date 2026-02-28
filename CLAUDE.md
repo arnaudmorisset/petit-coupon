@@ -72,17 +72,19 @@ SVG path data constants for theme decorations. All designs use normalized viewBo
 - `SessionSerializer` — converts between domain objects (`Coupon`) and `SessionData`. Resilient deserialization: validates theme IDs via `ThemeRegistry`, filters invalid coupons, falls back to defaults on error. Writes `version: 1` on serialize; handles old format (no version) gracefully on deserialize
 
 ### Store Layer (`src/lib/stores/`)
-- `AppContext` — wraps `CouponStore`, `ThemeStore`, `StepperStore` in a class with `provide()` (calls `setContext`) and `static current()` (calls `getContext`). Set in `App.svelte`, consumed by components via `AppContext.current()`
+- `AppContext` — wraps `CouponStore`, `ThemeStore`, `StatusStore`, `PersistenceManager` in a class with `provide()` (calls `setContext`) and `static current()` (calls `getContext`). Set in `App.svelte`, consumed by components via `AppContext.current()`
 - `CouponStore` — Svelte 5 reactive class wrapping `CouponCollection`, uses `$state`. Owns `IdGenerator` and exposes `nextId()`. Methods: `add(coupon)`, `remove`, `editCoupon(id, updates: Partial<Coupon>)`, `moveCoupon`, `loadCoupons`. Uses `mutate()` pattern for guaranteed state sync
 - `ThemeStore` — Svelte 5 reactive class wrapping `ThemeRegistry`, exposes `selectedTheme` and `selectTheme(id)`
 - `StepperStore` — manages 3-step navigation (Theme → Create → Preview & Download), guards step 3 behind coupon existence
+- `StatusStore` — Svelte 5 reactive class for screen reader announcements. `announce(text)` sets `message` ($state) and auto-clears after 5 seconds. Used by components to announce dynamic content changes via ARIA live regions
 - `PersistenceManager` — auto-saves session (theme + coupons) to `AppStorage` via `$effect` with 300ms debounce and cleanup function, skips redundant save on initial mount, restores on construction, exposes `clearSession()`
 
 ### UI Layer (`src/lib/components/`)
 Thin Svelte 5 components. Components access stores via `AppContext.current()` — no prop drilling. No business logic in components.
 
 - `AppStepper` — 3-step guided flow with step indicators and Back/Next navigation
-- `CouponForm` — title input + body textarea to add coupons, enabled when at least one field is non-empty, responsive (stacks vertically on mobile)
+- `StatusAnnouncer` — visually-hidden `aria-live="polite"` region that announces `StatusStore.message` to screen readers
+- `CouponForm` — title input (maxlength 80) + body input (maxlength 500) to add coupons, enabled when at least one field is non-empty, responsive (stacks vertically on mobile)
 - `CouponList` — list of coupons with reorder (up/down) buttons and remove button per coupon
 - `CouponPreview` — single coupon card with two-field inline editing (title input + body textarea, explicit Save/Cancel buttons). Shows title in larger/bolder font above body
 - `SheetPreview` — WYSIWYG multi-page A4 preview using `LayoutEngine` and `SheetPreviewData`
@@ -111,7 +113,8 @@ Thin Svelte 5 components. Components access stores via `AppContext.current()` �
 - **Shared domain utilities** — extract duplicated constants (`PT_TO_MM` in `units.ts`) and functions (`borderStyleToCss` in `border-style.ts`) into the domain layer. Never duplicate logic across files.
 - **UI color palette** — all UI colors must reference CSS custom properties defined in `app.css` (e.g. `var(--ui-primary)`). Never use raw hex colors in component `<style>` blocks.
 - **Svelte context for stores** — use `AppContext` (Svelte `setContext`/`getContext`) to provide stores at the root. Components read stores via `AppContext.current()` — never pass stores as props.
-- **Accessibility** — form inputs must have `aria-label` attributes. Interactive elements (theme cards, toggle buttons) must have descriptive `aria-label` and `aria-pressed` where applicable.
+- **Accessibility** — form inputs must have `aria-label` attributes. Interactive elements (theme cards, toggle buttons) must have descriptive `aria-label` and `aria-pressed` where applicable. Dynamic content changes (coupon add/remove/reorder/edit, PDF download) must announce to screen readers via `StatusStore.announce()`. Form inputs must enforce `maxlength` to prevent excessively long content.
+- **Reduced motion** — `app.css` includes a global `@media (prefers-reduced-motion: reduce)` rule that disables all transitions and animations. Never add `transition-duration: 0s` — use `0.01ms` to avoid breaking `transitionend` event listeners.
 
 ## Testing
 

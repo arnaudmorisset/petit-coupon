@@ -18,7 +18,7 @@
 	}
 
 	const { coupon, index, total, onedit, onremove, onmoveup, onmovedown }: Props = $props();
-	const { themeStore } = AppContext.current();
+	const { themeStore, statusStore } = AppContext.current();
 	const theme = $derived(themeStore.selectedTheme);
 
 	const isFirst = $derived(index === 0);
@@ -44,6 +44,7 @@
 			onedit
 		) {
 			onedit(coupon.id, { title: trimmedTitle, text: trimmedText });
+			statusStore.announce("Coupon updated");
 		}
 		editing = false;
 	}
@@ -100,6 +101,7 @@
 				class="coupon-edit-title"
 				bind:value={editTitle}
 				placeholder="Title (optional)"
+				maxlength="80"
 				onkeydown={handleKeydown}
 				aria-label="Edit coupon title"
 			/>
@@ -107,6 +109,7 @@
 				class="coupon-edit-text"
 				bind:value={editText}
 				placeholder="Coupon text..."
+				maxlength="500"
 				onkeydown={handleKeydown}
 				aria-label="Edit coupon text"
 			></textarea>
