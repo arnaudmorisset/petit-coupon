@@ -4,7 +4,6 @@
   import CouponForm from './lib/components/CouponForm.svelte'
   import CouponList from './lib/components/CouponList.svelte'
   import DownloadButton from './lib/components/DownloadButton.svelte'
-  import PreviewPanel from './lib/components/PreviewPanel.svelte'
   import Section from './lib/components/Section.svelte'
   import StatusAnnouncer from './lib/components/StatusAnnouncer.svelte'
   import ThemePicker from './lib/components/ThemePicker.svelte'
@@ -33,8 +32,6 @@
 
   const ctx = new AppContext(couponStore, themeStore, statusStore, persistenceManager)
   ctx.provide()
-
-  let showSheet = $state(false)
 </script>
 
 <svelte:boundary onerror={(error) => console.error('Petit Coupon rendering error:', error)}>
@@ -44,36 +41,24 @@
     <p class="app-subtitle">Printable love coupons, made simple</p>
   </header>
 
-  <div class="layout">
-    <div class="workspace">
-      <Section label="Choose a Theme">
-        <ThemePicker />
+  <div class="workspace">
+    <Section label="Choose a Theme">
+      <ThemePicker />
+    </Section>
+    <Section label="Add a Coupon">
+      <CouponForm />
+    </Section>
+    {#if !couponStore.isEmpty}
+      <Section label="Your Coupons" suffix="({couponStore.count})">
+        {#snippet action()}
+          <div class="section-actions">
+            <DownloadButton />
+            <ClearButton />
+          </div>
+        {/snippet}
+        <CouponList />
       </Section>
-      <Section label="Add a Coupon">
-        <CouponForm />
-      </Section>
-      {#if !couponStore.isEmpty}
-        <Section label="Your Coupons" suffix="({couponStore.count})">
-          {#snippet action()}
-            <button class="sheet-toggle" onclick={() => showSheet = !showSheet}
-              type="button" aria-label="Toggle sheet preview">
-              {showSheet ? 'Hide' : 'Show'} sheet preview
-            </button>
-          {/snippet}
-          <CouponList />
-        </Section>
-      {/if}
-    </div>
-
-    <div class="sidebar">
-      <Section label={showSheet ? 'Print Preview' : 'Preview'}>
-        <PreviewPanel {showSheet} />
-      </Section>
-      <DownloadButton />
-      {#if !couponStore.isEmpty}
-        <ClearButton />
-      {/if}
-    </div>
+    {/if}
   </div>
 
   {#snippet failed(error, reset)}
@@ -84,7 +69,7 @@
 <style>
   .app-header {
     text-align: center;
-    max-width: 1100px;
+    max-width: 640px;
     margin: 0 auto;
     padding: 40px 20px 10px;
   }
@@ -105,54 +90,18 @@
     margin: 6px 0 0;
   }
 
-  .layout {
-    max-width: 1100px;
+  .workspace {
+    max-width: 640px;
     margin: 0 auto;
     padding: 20px 24px 60px;
-    display: grid;
-    grid-template-columns: 1fr 350px;
-    gap: 32px;
-    align-items: start;
-  }
-
-  .workspace {
     display: flex;
     flex-direction: column;
     gap: 24px;
   }
 
-  .sidebar {
-    position: sticky;
-    top: 24px;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-  }
-
-  .sheet-toggle {
-    padding: 4px 10px;
-    border-radius: 6px;
-    border: 1px solid var(--ui-border);
-    background: var(--ui-card-bg);
-    font-size: 11px;
-    color: var(--ui-text-muted);
-    cursor: pointer;
-    transition: all 0.15s ease;
-  }
-
-  .sheet-toggle:hover {
-    background: var(--ui-bg-hover);
-  }
-
   @media (max-width: 768px) {
-    .layout {
-      grid-template-columns: 1fr;
-      gap: 24px;
+    .workspace {
       padding: 16px 16px 40px;
-    }
-
-    .sidebar {
-      position: static;
     }
 
     .app-header {
@@ -166,15 +115,16 @@
     .app-subtitle {
       font-size: 14px;
     }
+  }
 
-    .sheet-toggle {
-      min-height: 36px;
-      padding: 6px 12px;
-    }
+  .section-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
   }
 
   @media (max-width: 480px) {
-    .layout {
+    .workspace {
       gap: 16px;
       padding: 12px 12px 32px;
     }

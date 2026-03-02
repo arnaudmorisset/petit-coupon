@@ -9,7 +9,6 @@ Create beautiful love coupons, choose a theme, write your messages, and download
 ## Features
 
 - 4 hand-crafted themes with decorative SVG patterns, ornaments, and illustrations
-- Real-time WYSIWYG preview with multi-page A4 sheet layout
 - Auto-scaling text that fits perfectly in each coupon
 - High-quality vector PDF output (jsPDF, no html2canvas)
 - Session persistence via localStorage

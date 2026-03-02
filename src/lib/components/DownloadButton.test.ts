@@ -34,21 +34,11 @@ describe("DownloadButton", () => {
 		});
 	});
 
-	it("shows singular coupon count in label", async () => {
+	it("shows download label", async () => {
 		const stores = renderButton();
 		stores.couponStore.add(new Coupon(new CouponId("a"), "Free hug", ""));
 		await waitFor(() => {
-			expect(screen.getByRole("button").textContent).toContain("1 coupon");
-		});
-		expect(screen.getByRole("button").textContent).not.toContain("coupons");
-	});
-
-	it("shows plural coupon count in label", async () => {
-		const stores = renderButton();
-		stores.couponStore.add(new Coupon(new CouponId("a"), "Free hug", ""));
-		stores.couponStore.add(new Coupon(new CouponId("b"), "Movie night", ""));
-		await waitFor(() => {
-			expect(screen.getByRole("button").textContent).toContain("2 coupons");
+			expect(screen.getByRole("button").textContent).toContain("Download PDF");
 		});
 	});
 });

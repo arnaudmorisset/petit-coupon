@@ -31,8 +31,7 @@
 
 	const label = $derived(() => {
 		if (generating) return "Generating\u2026";
-		const count = store.count;
-		return `\u2193 Download PDF (${count} coupon${count !== 1 ? "s" : ""})`;
+		return "Download PDF";
 	});
 
 	function handleDownload(): void {
@@ -65,30 +64,31 @@
 
 <style>
 	.download-btn {
-		width: 100%;
-		padding: 14px 20px;
-		border-radius: 10px;
-		min-height: 48px;
+		padding: 5px 12px;
+		border-radius: 6px;
 		border: none;
-		font-size: 15px;
+		font-size: 12px;
 		font-weight: 600;
 		cursor: pointer;
 		transition: all 0.15s ease;
 		background: var(--dl-bg);
 		color: white;
-		box-shadow: 0 2px 12px var(--dl-shadow);
+		white-space: nowrap;
+	}
+
+	.download-btn:hover:not(:disabled) {
+		opacity: 0.85;
 	}
 
 	.download-btn:disabled {
 		background: var(--ui-disabled-bg);
 		color: var(--ui-text-faint);
 		cursor: default;
-		box-shadow: none;
 	}
 
 	.download-error {
 		color: var(--ui-danger-text);
-		font-size: 13px;
-		margin: 8px 0 0;
+		font-size: 12px;
+		margin: 4px 0 0;
 	}
 </style>

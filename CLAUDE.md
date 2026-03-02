@@ -28,7 +28,7 @@ npm run format      # Format with Biome (writes changes)
 
 ## Architecture
 
-Vanilla Svelte 5 SPA (no SvelteKit). Entry: `index.html` → `src/main.ts` → `src/App.svelte`.
+Vanilla Svelte 5 SPA (no SvelteKit). Entry: `index.html` → `src/main.ts` → `src/App.svelte`. Single-column centered layout (`max-width: 640px`).
 
 ### Domain Layer (`src/lib/domain/`)
 Pure TypeScript classes — zero framework dependency. Each concept is its own file:
@@ -39,7 +39,6 @@ Pure TypeScript classes — zero framework dependency. Each concept is its own f
 - `TextScaler` — computes optimal font size to fit text in a bounding box with word wrapping and force-break
 - `CouponTextLayout` — computes title + body text zones for PDF rendering. Uses `TextScaler` to auto-scale each zone independently. Returns `TextBlockLayout` (lines, fontSize, offsetY) for title (nullable) and body. Accepts `illustration` param to reduce text width when an illustration occupies a corner
 - `ThemeAssets` types (`theme-assets.ts`) — `SvgPathData`, `PatternAsset`, `OrnamentAsset`, `IllustrationAsset`, `ThemeAssets`. Each theme optionally carries `assets?: ThemeAssets` for decorative SVG elements
-- `SheetPreviewData` — groups coupons and grid positions by page number for preview rendering
 - `Theme` interface + `DEFAULT_THEME` constant — extended with `ThemeCategory`, `BorderStyle`, title font, accent color, padding, and border style
 - `ThemeRegistry` — holds all themes, lookups by ID or category, validates uniqueness
 - `themes.ts` — 4 theme definitions (`classic`, `romantic`, `sunshine`, `midnight`) + `ALL_THEMES` array + `THEME_REGISTRY` instance. Each theme wires in its decorative assets (patterns, ornaments, illustrations)
@@ -75,24 +74,20 @@ SVG path data constants for theme decorations. All designs use normalized viewBo
 - `AppContext` — wraps `CouponStore`, `ThemeStore`, `StatusStore`, `PersistenceManager` in a class with `provide()` (calls `setContext`) and `static current()` (calls `getContext`). Set in `App.svelte`, consumed by components via `AppContext.current()`
 - `CouponStore` — Svelte 5 reactive class wrapping `CouponCollection`, uses `$state`. Owns `IdGenerator` and exposes `nextId()`. Methods: `add(coupon)`, `remove`, `editCoupon(id, updates: Partial<Coupon>)`, `moveCoupon`, `loadCoupons`. Uses `mutate()` pattern for guaranteed state sync
 - `ThemeStore` — Svelte 5 reactive class wrapping `ThemeRegistry`, exposes `selectedTheme` and `selectTheme(id)`
-- `StepperStore` — manages 3-step navigation (Theme → Create → Preview & Download), guards step 3 behind coupon existence
 - `StatusStore` — Svelte 5 reactive class for screen reader announcements. `announce(text)` sets `message` ($state) and auto-clears after 5 seconds. Used by components to announce dynamic content changes via ARIA live regions
 - `PersistenceManager` — auto-saves session (theme + coupons) to `AppStorage` via `$effect` with 300ms debounce and cleanup function, skips redundant save on initial mount, restores on construction, exposes `clearSession()`
 
 ### UI Layer (`src/lib/components/`)
 Thin Svelte 5 components. Components access stores via `AppContext.current()` — no prop drilling. No business logic in components.
 
-- `AppStepper` — 3-step guided flow with step indicators and Back/Next navigation
 - `StatusAnnouncer` — visually-hidden `aria-live="polite"` region that announces `StatusStore.message` to screen readers
 - `CouponForm` — title input (maxlength 80) + body input (maxlength 500) to add coupons, enabled when at least one field is non-empty, responsive (stacks vertically on mobile)
 - `CouponList` — list of coupons with reorder (up/down) buttons and remove button per coupon
 - `CouponPreview` — single coupon card with two-field inline editing (title input + body textarea, explicit Save/Cancel buttons). Shows title in larger/bolder font above body
-- `SheetPreview` — WYSIWYG multi-page A4 preview using `LayoutEngine` and `SheetPreviewData`
-- `SheetPage` — renders one A4 page with absolutely-positioned coupon cells (percentage-based coordinates), shows title + body
 - `ClearButton` — "Start fresh" button with browser `confirm()` dialog, calls `PersistenceManager.clearSession()`
-- `DownloadButton` — creates `CouponAssetRenderer(new SvgPathRenderer())` and passes it to `JsPdfCouponRenderer`. Shows loading state during generation, catches errors with user-visible feedback
+- `DownloadButton` — compact header button that creates `CouponAssetRenderer(new SvgPathRenderer())` and passes it to `JsPdfCouponRenderer`. Sits in the "Your Coupons" section header alongside `ClearButton`. Shows loading state during generation, catches errors with user-visible feedback
 - `ThemePicker`, `ThemePreviewCard` — theme selection UI; preview cards show decorative SVG assets with `aria-label` and `aria-pressed`
-- `SvgPattern`, `SvgOrnament`, `SvgIllustration` — CSS preview components rendering theme assets as inline SVGs (positioned absolutely, pointer-events none). Used in `CouponPreview`, `SheetPage`, and `ThemePreviewCard`
+- `SvgPattern`, `SvgOrnament`, `SvgIllustration` — CSS preview components rendering theme assets as inline SVGs (positioned absolutely, pointer-events none). Used in `CouponPreview` and `ThemePreviewCard`
 - Theme-dependent styling uses CSS custom properties (`style:--var-name`) set on elements, referenced in `<style>` blocks — not inline `style:property` attributes
 - UI color palette defined as CSS custom properties on `:root` in `app.css` (`--ui-primary`, `--ui-border`, `--ui-text-muted`, etc.). Never use raw hex colors in component `<style>` blocks
 - Responsive breakpoint at 640px (mobile below, desktop above)
