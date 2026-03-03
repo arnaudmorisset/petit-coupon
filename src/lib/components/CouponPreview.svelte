@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { t } from "svelte-i18n";
 	import type { Coupon } from "../domain/coupon";
 	import type { CouponId } from "../domain/coupon-id";
 	import { borderStyleToCss } from "../domain/border-style";
@@ -44,7 +45,7 @@
 			onedit
 		) {
 			onedit(coupon.id, { title: trimmedTitle, text: trimmedText });
-			statusStore.announce("Coupon updated");
+			statusStore.announce($t('announce.couponUpdated'));
 		}
 		editing = false;
 	}
@@ -76,7 +77,7 @@
 			class="remove-btn"
 			onclick={(e) => { e.stopPropagation(); onremove(); }}
 			type="button"
-			aria-label="Remove coupon"
+			aria-label={$t('coupon.removeAriaLabel')}
 		>&times;</button>
 	{/if}
 
@@ -100,28 +101,28 @@
 			<input
 				class="coupon-edit-title"
 				bind:value={editTitle}
-				placeholder="Title (optional)"
+				placeholder={$t('coupon.titlePlaceholder')}
 				maxlength="80"
 				onkeydown={handleKeydown}
-				aria-label="Edit coupon title"
+				aria-label={$t('coupon.editTitleAriaLabel')}
 			/>
 			<textarea
 				class="coupon-edit-text"
 				bind:value={editText}
-				placeholder="Coupon text..."
+				placeholder={$t('coupon.textPlaceholder')}
 				maxlength="500"
 				onkeydown={handleKeydown}
-				aria-label="Edit coupon text"
+				aria-label={$t('coupon.editTextAriaLabel')}
 			></textarea>
 			<div class="coupon-edit-actions">
-				<button class="edit-done-btn" onclick={saveEdit} type="button">Done</button>
+				<button class="edit-done-btn" onclick={saveEdit} type="button">{$t('coupon.done')}</button>
 			</div>
 			{#if onmoveup || onmovedown}
 				<div class="reorder-controls">
 					<button class="reorder-btn" onclick={onmoveup} disabled={isFirst}
-						type="button" aria-label="Move coupon up">&#8593;</button>
+						type="button" aria-label={$t('coupon.moveUpAriaLabel')}>&#8593;</button>
 					<button class="reorder-btn" onclick={onmovedown} disabled={isLast}
-						type="button" aria-label="Move coupon down">&#8595;</button>
+						type="button" aria-label={$t('coupon.moveDownAriaLabel')}>&#8595;</button>
 				</div>
 			{/if}
 		</div>

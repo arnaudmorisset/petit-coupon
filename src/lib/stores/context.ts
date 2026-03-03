@@ -1,5 +1,6 @@
 import { getContext, setContext } from "svelte";
 import type { CouponStore } from "./coupon-store.svelte";
+import type { LocaleStore } from "./locale-store.svelte";
 import type { PersistenceManager } from "./persistence-manager.svelte";
 import type { StatusStore } from "./status-store.svelte";
 import type { ThemeStore } from "./theme-store.svelte";
@@ -11,17 +12,20 @@ export class AppContext {
 	readonly themeStore: ThemeStore;
 	readonly statusStore: StatusStore;
 	readonly persistenceManager: PersistenceManager;
+	readonly localeStore: LocaleStore;
 
 	constructor(
 		couponStore: CouponStore,
 		themeStore: ThemeStore,
 		statusStore: StatusStore,
 		persistenceManager: PersistenceManager,
+		localeStore: LocaleStore,
 	) {
 		this.couponStore = couponStore;
 		this.themeStore = themeStore;
 		this.statusStore = statusStore;
 		this.persistenceManager = persistenceManager;
+		this.localeStore = localeStore;
 	}
 
 	provide(): void {

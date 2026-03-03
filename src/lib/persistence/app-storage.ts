@@ -8,6 +8,7 @@ export interface SessionData {
 	readonly version: number;
 	readonly selectedThemeId: string;
 	readonly coupons: readonly SerializedCoupon[];
+	readonly locale?: string;
 }
 
 export interface AppStorage {

@@ -1,10 +1,12 @@
 <script lang="ts">
+	import { t } from "svelte-i18n";
 	import { Coupon } from "../domain/coupon";
-	import { COUPON_SUGGESTIONS } from "../domain/suggestions";
+	import { SuggestionCatalog } from "../domain/suggestions";
 	import { AppContext } from "../stores/context";
 
 	const { couponStore: store, themeStore, statusStore } = AppContext.current();
 	const theme = $derived(themeStore.selectedTheme);
+	const suggestions = new SuggestionCatalog();
 
 	let title = $state("");
 	let text = $state("");
@@ -22,7 +24,11 @@
 		title = "";
 		text = "";
 		titleRef?.focus();
-		statusStore.announce(trimmedTitle.length > 0 ? `Coupon added: ${trimmedTitle}` : "Coupon added");
+		statusStore.announce(
+			trimmedTitle.length > 0
+				? $t('announce.couponAddedWithTitle', { values: { title: trimmedTitle } })
+				: $t('announce.couponAdded'),
+		);
 	}
 
 	function handleTitleKeydown(e: KeyboardEvent): void {
@@ -39,9 +45,9 @@
 		}
 	}
 
-	function handleSuggestion(suggestion: string): void {
-		store.add(new Coupon(store.nextId(), suggestion, ""));
-		statusStore.announce(`Coupon added: ${suggestion}`);
+	function handleSuggestion(translatedText: string): void {
+		store.add(new Coupon(store.nextId(), translatedText, ""));
+		statusStore.announce($t('announce.couponAddedWithTitle', { values: { title: translatedText } }));
 	}
 </script>
 
@@ -49,8 +55,8 @@
 	<input
 		class="title-input"
 		type="text"
-		placeholder="Title (optional)"
-		aria-label="Coupon title"
+		placeholder={$t('form.titlePlaceholder')}
+		aria-label={$t('coupon.titleAriaLabel')}
 		maxlength="80"
 		bind:this={titleRef}
 		bind:value={title}
@@ -61,8 +67,8 @@
 		<input
 			class="body-input"
 			type="text"
-			placeholder="e.g. One breakfast in bed"
-			aria-label="Coupon text"
+			placeholder={$t('form.textPlaceholder')}
+			aria-label={$t('coupon.textAriaLabel')}
 			maxlength="500"
 			bind:this={bodyRef}
 			bind:value={text}
@@ -70,21 +76,22 @@
 		/>
 		<button
 			class="add-button"
-			aria-label="Add coupon"
+			aria-label={$t('form.addCouponAriaLabel')}
 			onclick={handleAdd}
 			disabled={!canAdd}
 		>+</button>
 	</div>
 
 	<div class="suggestions">
-		<span class="suggestions-label">Ideas</span>
+		<span class="suggestions-label">{$t('form.ideasLabel')}</span>
 		<div class="suggestions-list">
-			{#each COUPON_SUGGESTIONS as suggestion}
+			{#each suggestions.keys as key}
+				{@const translatedText = $t(`suggestions.${key}`)}
 				<button
 					class="suggestion-chip"
-					aria-label="Add coupon: {suggestion}"
-					onclick={() => handleSuggestion(suggestion)}
-				>{suggestion}</button>
+					aria-label={$t('form.addSuggestionAriaLabel', { values: { text: translatedText } })}
+					onclick={() => handleSuggestion(translatedText)}
+				>{translatedText}</button>
 			{/each}
 		</div>
 	</div>

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { Coupon } from "../domain/coupon";
 import { CouponId } from "../domain/coupon-id";
+import { Locale } from "../domain/locale";
 import { ThemeRegistry } from "../domain/theme-registry";
 import { CLASSIC_THEME, ROMANTIC_THEME } from "../domain/themes";
 import { SessionSerializer } from "./session-serializer";
@@ -15,7 +16,7 @@ describe("SessionSerializer", () => {
 			new Coupon(new CouponId("2"), "Other text"),
 		];
 
-		const data = serializer.serialize("classic", coupons);
+		const data = serializer.serialize("classic", coupons, Locale.EN);
 		const result = serializer.deserialize(data);
 
 		expect(result.themeId).toBe("classic");
@@ -99,18 +100,18 @@ describe("SessionSerializer", () => {
 		const serializer = new SessionSerializer(registry);
 		const coupons = [new Coupon(new CouponId("1"), "Body", "Special Title")];
 
-		const data = serializer.serialize("classic", coupons);
+		const data = serializer.serialize("classic", coupons, Locale.EN);
 
 		expect(data.coupons[0]?.title).toBe("Special Title");
 		expect(data.coupons[0]?.text).toBe("Body");
 	});
 
-	it("includes version 1 in serialized output", () => {
+	it("includes version 2 in serialized output", () => {
 		const serializer = new SessionSerializer(registry);
 
-		const data = serializer.serialize("classic", []);
+		const data = serializer.serialize("classic", [], Locale.EN);
 
-		expect(data.version).toBe(1);
+		expect(data.version).toBe(2);
 	});
 
 	it("deserializes old format data without version field", () => {
@@ -148,5 +149,64 @@ describe("SessionSerializer", () => {
 
 		expect(result.themeId).toBe(registry.getDefault().id);
 		expect(result.coupons).toHaveLength(0);
+	});
+
+	it("serializes with version 2 and locale", () => {
+		const serializer = new SessionSerializer(registry);
+
+		const data = serializer.serialize("classic", [], Locale.FR);
+
+		expect(data.version).toBe(2);
+		expect(data.locale).toBe("fr");
+	});
+
+	it("deserializes valid locale", () => {
+		const serializer = new SessionSerializer(registry);
+
+		const result = serializer.deserialize({
+			version: 2,
+			selectedThemeId: "classic",
+			coupons: [],
+			locale: "fr",
+		});
+
+		expect(result.locale).toBe(Locale.FR);
+	});
+
+	it("falls back to English for unknown locale", () => {
+		const serializer = new SessionSerializer(registry);
+
+		const result = serializer.deserialize({
+			version: 2,
+			selectedThemeId: "classic",
+			coupons: [],
+			locale: "de",
+		});
+
+		expect(result.locale).toBe(Locale.EN);
+	});
+
+	it("falls back to English when locale is missing (v1 data)", () => {
+		const serializer = new SessionSerializer(registry);
+
+		const result = serializer.deserialize({
+			version: 1,
+			selectedThemeId: "classic",
+			coupons: [],
+		});
+
+		expect(result.locale).toBe(Locale.EN);
+	});
+
+	it("round-trips locale through serialize and deserialize", () => {
+		const serializer = new SessionSerializer(registry);
+		const coupons = [new Coupon(new CouponId("1"), "Body", "Title")];
+
+		const data = serializer.serialize("romantic", coupons, Locale.FR);
+		const result = serializer.deserialize(data);
+
+		expect(result.locale).toBe(Locale.FR);
+		expect(result.themeId).toBe("romantic");
+		expect(result.coupons).toHaveLength(1);
 	});
 });

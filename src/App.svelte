@@ -1,9 +1,11 @@
 <script lang="ts">
+  import { t } from 'svelte-i18n'
   import ErrorFallback from './lib/components/ErrorFallback.svelte'
   import ClearButton from './lib/components/ClearButton.svelte'
   import CouponForm from './lib/components/CouponForm.svelte'
   import CouponList from './lib/components/CouponList.svelte'
   import DownloadButton from './lib/components/DownloadButton.svelte'
+  import LocaleToggle from './lib/components/LocaleToggle.svelte'
   import Section from './lib/components/Section.svelte'
   import StatusAnnouncer from './lib/components/StatusAnnouncer.svelte'
   import ThemePicker from './lib/components/ThemePicker.svelte'
@@ -13,6 +15,7 @@
   import { SessionSerializer } from './lib/persistence/session-serializer'
   import { AppContext } from './lib/stores/context'
   import { CouponStore } from './lib/stores/coupon-store.svelte'
+  import { LocaleStore } from './lib/stores/locale-store.svelte'
   import { PersistenceManager } from './lib/stores/persistence-manager.svelte'
   import { StatusStore } from './lib/stores/status-store.svelte'
   import { ThemeStore } from './lib/stores/theme-store.svelte'
@@ -20,6 +23,7 @@
   const couponStore = new CouponStore(new UuidGenerator())
   const themeStore = new ThemeStore(THEME_REGISTRY)
   const statusStore = new StatusStore()
+  const localeStore = new LocaleStore()
 
   const storage = new LocalStorageAdapter(localStorage)
   const serializer = new SessionSerializer(THEME_REGISTRY)
@@ -28,28 +32,32 @@
     serializer,
     couponStore,
     themeStore,
+    localeStore,
   )
 
-  const ctx = new AppContext(couponStore, themeStore, statusStore, persistenceManager)
+  const ctx = new AppContext(couponStore, themeStore, statusStore, persistenceManager, localeStore)
   ctx.provide()
 </script>
 
 <svelte:boundary onerror={(error) => console.error('Petit Coupon rendering error:', error)}>
   <StatusAnnouncer />
   <header class="app-header">
-    <h1 class="app-title">Petit Coupon</h1>
-    <p class="app-subtitle">Printable love coupons, made simple</p>
+    <div class="header-top">
+      <LocaleToggle />
+    </div>
+    <h1 class="app-title">{$t('app.title')}</h1>
+    <p class="app-subtitle">{$t('app.subtitle')}</p>
   </header>
 
   <div class="workspace">
-    <Section label="Choose a Theme">
+    <Section label={$t('theme.label')}>
       <ThemePicker />
     </Section>
-    <Section label="Add a Coupon">
+    <Section label={$t('form.label')}>
       <CouponForm />
     </Section>
     {#if !couponStore.isEmpty}
-      <Section label="Your Coupons" suffix="({couponStore.count})">
+      <Section label={$t('coupons.label')} suffix="({couponStore.count})">
         {#snippet action()}
           <div class="section-actions">
             <DownloadButton />
@@ -72,6 +80,13 @@
     max-width: 640px;
     margin: 0 auto;
     padding: 40px 20px 10px;
+    position: relative;
+  }
+
+  .header-top {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 8px;
   }
 
   .app-title {

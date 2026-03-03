@@ -1,0 +1,76 @@
+{
+	"app": {
+		"title": "Petit Coupon",
+		"subtitle": "Printable love coupons, made simple"
+	},
+	"theme": {
+		"label": "Choose a Theme",
+		"classic": "Clean and elegant",
+		"romantic": "Warm and intimate",
+		"sunshine": "Bright and cheerful",
+		"midnight": "Bold and modern",
+		"selectAriaLabel": "Select {name} theme"
+	},
+	"form": {
+		"label": "Add a Coupon",
+		"titlePlaceholder": "Title (optional)",
+		"textPlaceholder": "e.g. One breakfast in bed",
+		"ideasLabel": "Ideas",
+		"addCouponAriaLabel": "Add coupon",
+		"addSuggestionAriaLabel": "Add coupon: {text}"
+	},
+	"suggestions": {
+		"breakfastInBed": "One breakfast in bed",
+		"massage": "A massage whenever you want",
+		"movieNight": "Movie night, your pick",
+		"homeCookedDinner": "One home-cooked dinner",
+		"dayWithoutChores": "A day without chores",
+		"surpriseDate": "A surprise date planned by me",
+		"unlimitedCuddles": "Unlimited cuddles for a day",
+		"shoppingSpree": "One guilt-free shopping spree"
+	},
+	"coupons": {
+		"label": "Your Coupons",
+		"empty": "No coupons yet. Add one above!"
+	},
+	"coupon": {
+		"titlePlaceholder": "Title (optional)",
+		"textPlaceholder": "Coupon text...",
+		"done": "Done",
+		"removeAriaLabel": "Remove coupon",
+		"editTitleAriaLabel": "Edit coupon title",
+		"editTextAriaLabel": "Edit coupon text",
+		"moveUpAriaLabel": "Move coupon up",
+		"moveDownAriaLabel": "Move coupon down",
+		"titleAriaLabel": "Coupon title",
+		"textAriaLabel": "Coupon text"
+	},
+	"announce": {
+		"couponAdded": "Coupon added",
+		"couponAddedWithTitle": "Coupon added: {title}",
+		"couponRemoved": "Coupon removed",
+		"couponMovedUp": "Coupon moved up",
+		"couponMovedDown": "Coupon moved down",
+		"couponUpdated": "Coupon updated",
+		"pdfDownloaded": "PDF downloaded successfully"
+	},
+	"download": {
+		"label": "Download PDF",
+		"generating": "Generating\u2026",
+		"error": "PDF generation failed"
+	},
+	"actions": {
+		"startFresh": "Start a new batch"
+	},
+	"confirm": {
+		"startFresh": "Start fresh? This will remove all coupons and reset the theme."
+	},
+	"error": {
+		"title": "Something went wrong",
+		"message": "An unexpected error occurred. You can try recovering or reload the page.",
+		"tryAgain": "Try again",
+		"tryAgainAriaLabel": "Try to recover the application",
+		"reload": "Reload page",
+		"reloadAriaLabel": "Reload the page"
+	}
+}

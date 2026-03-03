@@ -1,0 +1,76 @@
+{
+	"app": {
+		"title": "Petit Coupon",
+		"subtitle": "Créez de jolis coupons cadeaux pour quelqu'un qui compte"
+	},
+	"theme": {
+		"label": "Choisir un thème",
+		"classic": "Sobre et élégant",
+		"romantic": "Doux et romantique",
+		"sunshine": "Lumineux et joyeux",
+		"midnight": "Audacieux et moderne",
+		"selectAriaLabel": "Sélectionner le thème {name}"
+	},
+	"form": {
+		"label": "Ajouter un coupon",
+		"titlePlaceholder": "Titre (facultatif)",
+		"textPlaceholder": "ex. Un petit-déjeuner au lit",
+		"ideasLabel": "Idées",
+		"addCouponAriaLabel": "Ajouter un coupon",
+		"addSuggestionAriaLabel": "Ajouter le coupon : {text}"
+	},
+	"suggestions": {
+		"breakfastInBed": "Un petit-déjeuner au lit",
+		"massage": "Un massage quand tu veux",
+		"movieNight": "Soirée film, tu choisis",
+		"homeCookedDinner": "Un dîner fait maison",
+		"dayWithoutChores": "Une journée sans corvées",
+		"surpriseDate": "Un rendez-vous surprise organisé par moi",
+		"unlimitedCuddles": "Câlins à volonté pour une journée",
+		"shoppingSpree": "Une session shopping sans culpabilité"
+	},
+	"coupons": {
+		"label": "Vos coupons",
+		"empty": "Aucun coupon pour le moment. Ajoutez-en un ci-dessus !"
+	},
+	"coupon": {
+		"titlePlaceholder": "Titre (facultatif)",
+		"textPlaceholder": "Texte du coupon...",
+		"done": "OK",
+		"removeAriaLabel": "Supprimer le coupon",
+		"editTitleAriaLabel": "Modifier le titre du coupon",
+		"editTextAriaLabel": "Modifier le texte du coupon",
+		"moveUpAriaLabel": "Déplacer le coupon vers le haut",
+		"moveDownAriaLabel": "Déplacer le coupon vers le bas",
+		"titleAriaLabel": "Titre du coupon",
+		"textAriaLabel": "Texte du coupon"
+	},
+	"announce": {
+		"couponAdded": "Coupon ajouté",
+		"couponAddedWithTitle": "Coupon ajouté : {title}",
+		"couponRemoved": "Coupon supprimé",
+		"couponMovedUp": "Coupon déplacé vers le haut",
+		"couponMovedDown": "Coupon déplacé vers le bas",
+		"couponUpdated": "Coupon mis à jour",
+		"pdfDownloaded": "PDF téléchargé avec succès"
+	},
+	"download": {
+		"label": "Télécharger le PDF",
+		"generating": "Génération\u2026",
+		"error": "Échec de la génération du PDF"
+	},
+	"actions": {
+		"startFresh": "Recommencer"
+	},
+	"confirm": {
+		"startFresh": "Recommencer ? Cela supprimera tous vos coupons et réinitialisera le thème."
+	},
+	"error": {
+		"title": "Quelque chose s'est mal passé",
+		"message": "Une erreur inattendue s'est produite. Vous pouvez essayer de récupérer ou recharger la page.",
+		"tryAgain": "Réessayer",
+		"tryAgainAriaLabel": "Essayer de récupérer l'application",
+		"reload": "Recharger la page",
+		"reloadAriaLabel": "Recharger la page"
+	}
+}

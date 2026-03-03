@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { t } from "svelte-i18n";
 	import type { Theme } from "../domain/theme";
 	import SvgPattern from "./SvgPattern.svelte";
 
@@ -16,7 +17,7 @@
 	class:selected={isSelected}
 	onclick={onselect}
 	type="button"
-	aria-label="Select {theme.name} theme"
+	aria-label={$t('theme.selectAriaLabel', { values: { name: theme.name } })}
 	aria-pressed={isSelected}
 	style:--preview-bg={theme.backgroundColor}
 	style:--preview-accent={theme.accentColor}
@@ -30,7 +31,7 @@
 
 		<span class="theme-card-sample">Abc</span>
 	</div>
-	<span class="theme-card-desc">{theme.description}</span>
+	<span class="theme-card-desc">{$t(`theme.${theme.id}`)}</span>
 </button>
 
 <style>

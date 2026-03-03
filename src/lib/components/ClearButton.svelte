@@ -1,17 +1,18 @@
 <script lang="ts">
+	import { t } from "svelte-i18n";
 	import { AppContext } from "../stores/context";
 
 	const { persistenceManager } = AppContext.current();
 
 	function handleClick(): void {
-		if (confirm("Start fresh? This will remove all coupons and reset the theme.")) {
+		if (confirm($t('confirm.startFresh'))) {
 			persistenceManager.clearSession();
 		}
 	}
 </script>
 
 <button class="clear-link" onclick={handleClick} type="button">
-	Start a new batch
+	{$t('actions.startFresh')}
 </button>
 
 <style>

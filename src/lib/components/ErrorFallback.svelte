@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { t } from "svelte-i18n";
+
 	interface Props {
 		error: unknown
 		reset: () => void
@@ -12,18 +14,18 @@
 </script>
 
 <div class="error-container" role="alert">
-	<h1 class="error-title">Something went wrong</h1>
+	<h1 class="error-title">{$t('error.title')}</h1>
 	<p class="error-message">
-		An unexpected error occurred. You can try recovering or reload the page.
+		{$t('error.message')}
 	</p>
 	<div class="error-actions">
 		<button class="error-btn error-btn-primary" onclick={reset} type="button"
-			aria-label="Try to recover the application">
-			Try again
+			aria-label={$t('error.tryAgainAriaLabel')}>
+			{$t('error.tryAgain')}
 		</button>
 		<button class="error-btn error-btn-secondary" onclick={handleReload} type="button"
-			aria-label="Reload the page">
-			Reload page
+			aria-label={$t('error.reloadAriaLabel')}>
+			{$t('error.reload')}
 		</button>
 	</div>
 </div>

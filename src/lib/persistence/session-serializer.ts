@@ -1,11 +1,13 @@
 import { Coupon } from "../domain/coupon";
 import { CouponId } from "../domain/coupon-id";
+import { Locale } from "../domain/locale";
 import type { ThemeRegistry } from "../domain/theme-registry";
 import type { SerializedCoupon, SessionData } from "./app-storage";
 
 export interface DeserializedSession {
 	readonly themeId: string;
 	readonly coupons: readonly Coupon[];
+	readonly locale: Locale;
 }
 
 export class SessionSerializer {
@@ -15,15 +17,20 @@ export class SessionSerializer {
 		this.registry = registry;
 	}
 
-	serialize(themeId: string, coupons: readonly Coupon[]): SessionData {
+	serialize(
+		themeId: string,
+		coupons: readonly Coupon[],
+		locale: Locale,
+	): SessionData {
 		return {
-			version: 1,
+			version: 2,
 			selectedThemeId: themeId,
 			coupons: coupons.map((c) => ({
 				id: c.id.value,
 				title: c.title,
 				text: c.text,
 			})),
+			locale: locale.value,
 		};
 	}
 
@@ -33,9 +40,14 @@ export class SessionSerializer {
 			const coupons = data.coupons
 				.filter((c) => this.isValidCoupon(c))
 				.map((c) => new Coupon(new CouponId(c.id), c.text, c.title));
-			return { themeId, coupons };
+			const locale = Locale.resolve(data.locale);
+			return { themeId, coupons, locale };
 		} catch {
-			return { themeId: this.registry.getDefault().id, coupons: [] };
+			return {
+				themeId: this.registry.getDefault().id,
+				coupons: [],
+				locale: Locale.DEFAULT,
+			};
 		}
 	}
 

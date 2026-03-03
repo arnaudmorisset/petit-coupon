@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { t } from "svelte-i18n";
 	import { CouponDimensions } from "../domain/coupon-dimensions";
 	import { LayoutConfig } from "../domain/layout-config";
 	import { LayoutEngine } from "../domain/layout-engine";
@@ -30,8 +31,8 @@
 	let error = $state("");
 
 	const label = $derived(() => {
-		if (generating) return "Generating\u2026";
-		return "Download PDF";
+		if (generating) return $t('download.generating');
+		return $t('download.label');
 	});
 
 	function handleDownload(): void {
@@ -40,9 +41,9 @@
 		try {
 			const blob = renderer.render(store.coupons, layout, themeStore.selectedTheme, APP_FONT_REGISTRY);
 			downloadService.download(blob, "petit-coupon.pdf");
-			statusStore.announce("PDF downloaded successfully");
+			statusStore.announce($t('announce.pdfDownloaded'));
 		} catch (e) {
-			error = e instanceof Error ? e.message : "PDF generation failed";
+			error = e instanceof Error ? e.message : $t('download.error');
 		} finally {
 			generating = false;
 		}

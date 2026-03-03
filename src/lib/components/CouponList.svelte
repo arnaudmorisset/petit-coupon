@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { t } from "svelte-i18n";
 	import type { Coupon } from "../domain/coupon";
 	import type { CouponId } from "../domain/coupon-id";
 	import { AppContext } from "../stores/context";
@@ -8,7 +9,7 @@
 
 	function handleRemove(id: CouponId): void {
 		store.remove(id);
-		statusStore.announce("Coupon removed");
+		statusStore.announce($t('announce.couponRemoved'));
 	}
 
 	function handleEdit(id: CouponId, updates: Partial<Coupon>): void {
@@ -17,17 +18,17 @@
 
 	function handleMoveUp(id: CouponId): void {
 		store.moveCoupon(id, "up");
-		statusStore.announce("Coupon moved up");
+		statusStore.announce($t('announce.couponMovedUp'));
 	}
 
 	function handleMoveDown(id: CouponId): void {
 		store.moveCoupon(id, "down");
-		statusStore.announce("Coupon moved down");
+		statusStore.announce($t('announce.couponMovedDown'));
 	}
 </script>
 
 {#if store.isEmpty}
-	<p class="empty-message">No coupons yet. Add one above!</p>
+	<p class="empty-message">{$t('coupons.empty')}</p>
 {:else}
 	<ul class="coupon-grid">
 		{#each store.coupons as coupon, index (coupon.id.value)}
