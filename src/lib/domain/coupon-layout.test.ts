@@ -36,7 +36,7 @@ describe("CouponTextLayout", () => {
 		expect(result.body.lines.length).toBeGreaterThan(0);
 	});
 
-	it("gives body the full inner height when no title", () => {
+	it("vertically centers body when no title", () => {
 		const layout = makeLayout();
 
 		const result = layout.compute({
@@ -50,7 +50,7 @@ describe("CouponTextLayout", () => {
 		});
 
 		expect(result.body.fits).toBe(true);
-		expect(result.body.offsetYMm).toBe(0);
+		expect(result.body.offsetYMm).toBeGreaterThan(0);
 	});
 
 	it("computes both title and body when title is present", () => {

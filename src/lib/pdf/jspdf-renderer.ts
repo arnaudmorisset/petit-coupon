@@ -26,8 +26,8 @@ export class RenderError extends Error {
 
 const CROP_MARK_LENGTH_MM = 3;
 const CROP_MARK_OFFSET_MM = 1;
-const TITLE_FONT_SIZE_PT = 14;
-const BODY_FONT_SIZE_PT = 10;
+const TITLE_FONT_SIZE_PT = 28;
+const BODY_FONT_SIZE_PT = 24;
 const MIN_FONT_SIZE_PT = 6;
 const LINE_HEIGHT_RATIO = 1.3;
 

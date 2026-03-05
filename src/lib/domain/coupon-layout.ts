@@ -75,12 +75,19 @@ export class CouponTextLayout {
 			fontName: this.bodyFontName,
 		});
 
+		const bodyHeightMm =
+			bodyResult.lines.length *
+			bodyResult.fontSizePt *
+			PT_TO_MM *
+			this.textScaler.lineHeightRatio;
+		const offsetYMm = Math.max(0, (params.innerHeightMm - bodyHeightMm) / 2);
+
 		return {
 			title: null,
 			body: {
 				lines: bodyResult.lines,
 				fontSizePt: bodyResult.fontSizePt,
-				offsetYMm: 0,
+				offsetYMm,
 				fits: bodyResult.fits,
 			},
 		};
@@ -97,31 +104,43 @@ export class CouponTextLayout {
 			fontName: this.titleFontName,
 		});
 
-		const lineHeightMm =
+		const titleLineHeightMm =
 			titleResult.fontSizePt * PT_TO_MM * this.textScaler.lineHeightRatio;
-		const titleHeightMm =
-			titleResult.lines.length * lineHeightMm + TITLE_BODY_GAP_MM;
-		const bodyHeightMm = Math.max(0, params.innerHeightMm - titleHeightMm);
+		const titleBlockMm = titleResult.lines.length * titleLineHeightMm;
+		const titleHeightWithGap = titleBlockMm + TITLE_BODY_GAP_MM;
+		const bodyAvailableMm = Math.max(
+			0,
+			params.innerHeightMm - titleHeightWithGap,
+		);
 
 		const bodyResult = this.textScaler.computeFontSize({
 			text: params.text,
 			boxWidthMm: params.innerWidthMm,
-			boxHeightMm: bodyHeightMm,
+			boxHeightMm: bodyAvailableMm,
 			fontSizePt: params.maxBodyFontSizePt,
 			fontName: this.bodyFontName,
 		});
+
+		const bodyLineHeightMm =
+			bodyResult.fontSizePt * PT_TO_MM * this.textScaler.lineHeightRatio;
+		const bodyBlockMm = bodyResult.lines.length * bodyLineHeightMm;
+		const totalContentMm = titleBlockMm + TITLE_BODY_GAP_MM + bodyBlockMm;
+		const verticalOffset = Math.max(
+			0,
+			(params.innerHeightMm - totalContentMm) / 2,
+		);
 
 		return {
 			title: {
 				lines: titleResult.lines,
 				fontSizePt: titleResult.fontSizePt,
-				offsetYMm: 0,
+				offsetYMm: verticalOffset,
 				fits: titleResult.fits,
 			},
 			body: {
 				lines: bodyResult.lines,
 				fontSizePt: bodyResult.fontSizePt,
-				offsetYMm: titleHeightMm,
+				offsetYMm: verticalOffset + titleHeightWithGap,
 				fits: bodyResult.fits,
 			},
 		};

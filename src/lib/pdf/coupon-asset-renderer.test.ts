@@ -158,15 +158,17 @@ describe("CouponAssetRenderer", () => {
 		);
 
 		expect(pathRenderer.drawPath).toHaveBeenCalledTimes(1);
-		// top-right: x = 10 + 90 - 10 = 90, y = 20
+		// Proportional sizing: w = 90 * 0.3 = 27, h = 55 * 0.4 = 22
+		// Inset: 90 * 0.04 = 3.6
+		// top-right: x = 10 + 90 - 27 - 3.6 = 69.4, y = 20 + 3.6 = 23.6
 		expect(pathRenderer.drawPath).toHaveBeenCalledWith(
 			doc,
 			fullAssets.illustration?.path,
 			expect.objectContaining({
-				x: 90,
-				y: 20,
-				width: 10,
-				height: 10,
+				x: 69.4,
+				y: 23.6,
+				width: 27,
+				height: 22,
 				fillColor: "#999999",
 			}),
 		);
