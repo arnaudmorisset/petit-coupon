@@ -7,7 +7,7 @@ Printable love coupons, made simple.
 
 Create beautiful love coupons, choose a theme, write your messages, and download a ready-to-print PDF. No sign-up, no ads, completely free. Everything runs in your browser — nothing is sent to a server.
 
-**Live at [petit-coupon.app](https://petit-coupon.app/)**
+**Live at [arnaudmorisset.github.io/petit-coupon](https://arnaudmorisset.github.io/petit-coupon/)**
 
 ## Features
 
