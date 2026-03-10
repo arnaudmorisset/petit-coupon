@@ -2,9 +2,7 @@ import { stat } from "node:fs/promises";
 import { expect, test } from "@playwright/test";
 
 test.beforeEach(async ({ page }) => {
-	await page.goto("/");
-	await page.evaluate(() => localStorage.clear());
-	await page.reload();
+	await page.goto("/petit-coupon/", { waitUntil: "networkidle" });
 });
 
 test.describe("Coupon workflow", () => {
@@ -12,10 +10,12 @@ test.describe("Coupon workflow", () => {
 		await expect(
 			page.getByRole("heading", { name: "Petit Coupon" }),
 		).toBeVisible();
-		await expect(page.getByText("Your coupons will appear here")).toBeVisible();
+		await expect(
+			page.getByRole("heading", { name: /Your Coupons/ }),
+		).not.toBeVisible();
 		await expect(
 			page.getByRole("button", { name: /Download PDF/ }),
-		).toBeDisabled();
+		).not.toBeVisible();
 	});
 
 	test("create a coupon using the form", async ({ page }) => {
@@ -79,10 +79,12 @@ test.describe("Coupon workflow", () => {
 
 		await page.getByRole("button", { name: "Remove coupon" }).click();
 
-		await expect(page.getByText("Your coupons will appear here")).toBeVisible();
+		await expect(
+			page.getByRole("heading", { name: /Your Coupons/ }),
+		).not.toBeVisible();
 		await expect(
 			page.getByRole("button", { name: /Download PDF/ }),
-		).toBeDisabled();
+		).not.toBeVisible();
 	});
 
 	test("download PDF generates a file", async ({ page }) => {
@@ -93,7 +95,9 @@ test.describe("Coupon workflow", () => {
 			.getByRole("button", { name: "Add coupon: Movie night, your pick" })
 			.click();
 
-		await expect(page.getByRole("button", { name: /2 coupons/ })).toBeEnabled();
+		await expect(
+			page.getByRole("button", { name: /Download PDF/ }),
+		).toBeEnabled();
 
 		const downloadPromise = page.waitForEvent("download");
 		await page.getByRole("button", { name: /Download PDF/ }).click();

@@ -1,9 +1,7 @@
 import { expect, test } from "@playwright/test";
 
 test.beforeEach(async ({ page }) => {
-	await page.goto("/");
-	await page.evaluate(() => localStorage.clear());
-	await page.reload();
+	await page.goto("/petit-coupon/", { waitUntil: "networkidle" });
 });
 
 test.describe("Persistence", () => {
@@ -49,12 +47,16 @@ test.describe("Persistence", () => {
 		page.on("dialog", (dialog) => dialog.accept());
 		await page.getByRole("button", { name: "Start a new batch" }).click();
 
-		await expect(page.getByText("Your coupons will appear here")).toBeVisible();
+		await expect(
+			page.getByRole("heading", { name: /Your Coupons/ }),
+		).not.toBeVisible();
 		await expect(
 			page.getByRole("button", { name: /Download PDF/ }),
-		).toBeDisabled();
+		).not.toBeVisible();
 
 		await page.reload();
-		await expect(page.getByText("Your coupons will appear here")).toBeVisible();
+		await expect(
+			page.getByRole("heading", { name: /Your Coupons/ }),
+		).not.toBeVisible();
 	});
 });
