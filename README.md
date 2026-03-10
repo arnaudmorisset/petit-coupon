@@ -1,5 +1,8 @@
 # Petit Coupon
 
+[![CI](https://github.com/arnaudmorisset/petit-coupon/actions/workflows/ci.yml/badge.svg)](https://github.com/arnaudmorisset/petit-coupon/actions/workflows/ci.yml)
+[![Deploy](https://github.com/arnaudmorisset/petit-coupon/actions/workflows/deploy.yml/badge.svg)](https://github.com/arnaudmorisset/petit-coupon/actions/workflows/deploy.yml)
+
 Printable love coupons, made simple.
 
 Create beautiful love coupons, choose a theme, write your messages, and download a ready-to-print PDF. No sign-up, no ads, completely free. Everything runs in your browser — nothing is sent to a server.
