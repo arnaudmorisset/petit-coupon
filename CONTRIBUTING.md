@@ -39,7 +39,7 @@ npm run test:e2e    # E2E tests (Playwright)
 - **Stores** (`src/lib/stores/`) — Svelte 5 reactive state using runes.
 - **Components** (`src/lib/components/`) — Thin Svelte 5 UI components. No business logic.
 
-See [CLAUDE.md](CLAUDE.md) for the full architecture reference.
+See [CLAUDE.md](CLAUDE.md) for the full architecture reference. To create a new theme, follow the [Adding a Theme](docs/adding-a-theme.md) guide.
 
 ## Key conventions
 

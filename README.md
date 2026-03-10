@@ -61,6 +61,8 @@ npm run dev
 
 Vanilla Svelte 5 SPA (no SvelteKit). Domain logic lives in pure TypeScript classes (`src/lib/domain/`), PDF rendering in `src/lib/pdf/`, and thin UI components in `src/lib/components/`. See [CLAUDE.md](CLAUDE.md) for full architecture details.
 
+Want to create a new theme? Follow the [Adding a Theme](docs/adding-a-theme.md) guide.
+
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
