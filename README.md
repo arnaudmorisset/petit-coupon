@@ -24,7 +24,8 @@ Create beautiful love coupons, choose a theme, write your messages, and download
 - **Svelte 5** with reactive runes
 - **TypeScript** (strict mode)
 - **Vite 7** for bundling
-- **Vitest** + Testing Library for tests
+- **Vitest** + Testing Library for unit tests
+- **Playwright** for E2E tests
 - **Biome** for linting and formatting
 - **jsPDF** for vector PDF generation
 - **svelte-i18n** for internationalization
@@ -51,12 +52,18 @@ npm run dev
 | `npm run preview` | Preview production build locally |
 | `npm run check` | Type-check Svelte + TypeScript |
 | `npm run test` | Run all tests once |
+| `npm run test:e2e` | Run E2E tests (Playwright) |
 | `npm run lint` | Lint with Biome |
+| `npm run lint:fix` | Lint and apply safe fixes |
 | `npm run format` | Format with Biome |
 
 ## Architecture
 
 Vanilla Svelte 5 SPA (no SvelteKit). Domain logic lives in pure TypeScript classes (`src/lib/domain/`), PDF rendering in `src/lib/pdf/`, and thin UI components in `src/lib/components/`. See [CLAUDE.md](CLAUDE.md) for full architecture details.
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 ## License
 
