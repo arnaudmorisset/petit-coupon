@@ -82,6 +82,6 @@
 	.theme-card-desc {
 		font-size: 10px;
 		margin-top: 6px;
-		color: color-mix(in srgb, var(--preview-text-color) 60%, transparent);
+		color: var(--ui-text-muted);
 	}
 </style>
